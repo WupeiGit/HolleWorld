@@ -1,0 +1,1 @@
+只能为数字：onkeyup="value=value.replace(/[^\d\.-]/g,'')"

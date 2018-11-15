@@ -1,0 +1,171 @@
+jquery使用必须引用文件<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+
+1.------------------获取下拉框的选中值
+jquery写法：
+
+写法1：jQuery("#productArea  option:selected").text();//获取下拉框选中显示文本值
+	jQuery("#productArea  option:selected").val();//获取下拉框选中value值
+	jQuery("#keyValue").find("option:selected" ).val()
+
+写法2： var teamCodeChecked=jQuery("input[name='completeCheckCircs']");
+	var teamCode="";
+	for(var i=0;i<teamCodeChecked.length;i++){
+		if(teamCodeChecked[i].checked){
+			teamCode=teamCodeChecked[i].value; //选中值
+			//teamCode=teamCodeChecked[i].text; //选中文本
+			break;
+		}
+	}
+写法3：jQuery("#keyValue").find("option:selected" ).text()；//jQuery("#keyValue").find("option:selected" ).val();
+写法4：var years=jQuery("select[name='YYYY']").val();
+	var month=jQuery("select[name='MM']").val();
+	var text= jQuery("#certificateNumber").val();
+
+js写法：
+写法1：
+ var checkbox=document.getElementsByName("checkbox");
+	var checkboxCheckbox=0,cpdIds="";
+	for(var i=1;i<checkbox.length;i++){
+		if(checkbox[i].checked==true){
+			 cpdIds+=document.getElementsByName("checkbox")[i].value+",";
+			 checkboxCheckbox++;
+		}
+	}
+
+写法2：
+var productAreaObj = document.getElementById("productArea");
+var productArea = productAreaObj.options[productAreaObj.selectedIndex].value;
+
+
+2.-----------------------获取文本框的值
+jquery写法：
+ 写法1：var spotRate= jQuery("#spotRate")[0].value；
+ 写法2：var spotRate= jQuery("#spotRate").val();
+
+js写法：
+var ledgerId = document.getElementById("ledgerId ").value;
+
+
+
+3.-----------------------获取<label>等类似标签的文本或值
+jquery写法：
+var sumMoneyRmb = jQuery("#sumMoneyRmb")[0].innerHTML；
+var sumMoneyRmb = jQuery("#sumMoneyRmb")[0].innerText；
+js写法：
+var sumMoneyRmb = document.getElementById("ledgerId ").innerHTML;
+var sumMoneyRmb = document.getElementById("ledgerId ").innerText;
+
+
+4.---------------------获取整个jsp页面的文本域值
+
+	function submitButton(){	
+		Ext.get(document.body).mask( "处理中.请稍等..." , "x-mask-loading");
+		if(!bc.checkCostAll()){
+			 Ext.get(document.body).unmask();
+			 return ;
+		}
+		jQuery.ajax({
+	        url : "${pageContext.request.contextPath}/addBusinessCostAll" ,
+	        type : "post",
+	        data: jQuery("#frmAdd").serialize(), //获取name是‘frmAdd’的form表单下的所有文本域值
+	        success : function(r){
+	        	if(isAjaxSuccess(r)){
+		              var obj = jQuery.parseJSON(r);
+		              if(obj.success){
+		                  alert( '保存成功，单据号：'+obj.billNo);
+		                  toUrl('loadBusinessCostList_my');
+		             } else{
+		                   alert( obj.promptError);
+		                   Ext.get(document.body).unmask();
+		             }
+	        	}else{
+	        		 Ext.get(document.body).unmask();
+	        	}
+	        },
+	        error : function(r){
+	             alert( '失败。');
+	             Ext.get(document.body).unmask();
+	        }
+	   });
+	}
+
+5--------------------单选框按钮值
+获取单选框的值有三种方式：
+
+1、$('input:radio:checked').val()；
+2、$("input[type='radio']:checked").val();
+3、$("input[name='rd']:checked").val();
+
+6----------------复选框选中值
+ var temp=new Array();
+   temp=$("input:checked").val();
+   document.write(temp);
+---------------------------
+方法1
+$("#dxbox li").each(function(){
+    if($(this).find("input[type=checkbox]:checked").val() != undefined)
+    {
+     alert($(this).find("input[type=checkbox]:checked").val());
+    }
+});
+
+方法2
+$("#dxbox li input[type=checkbox]").each(function(){
+    //var chk = $(this).find("[checked]");
+    if(this.checked){
+    alert($(this).val());
+    }
+});  
+}
+----------------------
+
+
+//我的实收页面，付款方式下拉框移除‘储值卡’
+$(function(){
+	$("#PayType option[value='储值卡']").remove();
+})
+
+
+
+------------------------------------------------------------------------------------------单选框值()
+使用jquery获取radio的值,最重要的是掌握jquery选择器的使用，在一个表单中我们通常是要获取被选中的那个radio项的值，所以要加checked来筛选，比如有以下的一些radio项：
+1.<input type="radio" name="testradio" value="jquery获取radio的值" />jquery获取radio的值
+2.<input type="radio" name="testradio" value="jquery获取checkbox的值" />jquery获取checkbox的值
+3.<input type="radio" name="testradio" value="jquery获取select的值" />jquery获取select的值
+要想获取某个radio的值有以下的几种方法,直接给出代码：
+1、
+1.$('input[name="testradio"]:checked').val();2、
+1.$('input:radio:checked').val();3、
+1.$('input[@name="testradio"][checked]');4、
+1.$('input[name="testradio"]').filter(':checked');差不多挺全的了，如果我们要遍历name为testradio的所有radio呢，代码如下
+1.$('input[name="testradio"]').each(function(){2.alert(this.value);3.});如果要取具体某个radio的值，比如第二个radio的值，这样写
+1.$('input[name="testradio"]:eq(1)').val()
+
+
+
+==============移除下拉框值
+
+
+/*if(costCategory ==  2){ 
+	//移除费用科目
+	//$("#costItem option[value !='押金']").remove();
+	//先隐藏除了“付押金”以外的科目
+	$("#costItem").val(''); //选中值置空
+	$("#costItem optgroup[label !='付押金']").hide();
+	$("#costItem optgroup[label !='付押金']").find("option[value != '']").hide();
+	$("#costItem optgroup[label = '付押金']").show();
+	$("#costItem optgroup[label = '付押金']").find("option[value != '']").show();
+	$("#costItem optgroup[label = '收押金']").show();
+	$("#costItem optgroup[label = '收押金']").find("option[value != '']").show();
+	$("#projectName option[value !='']").remove();
+}else{
+	////约款类别'报销、借款'时，隐藏已付和已收押金科目
+	$("#costItem").val(''); //选中值置空
+	$("#costItem optgroup[label !='付押金']").show();
+	$("#costItem optgroup[label !='付押金']").find("option[value != '']").show();
+	$("#costItem optgroup[label = '付押金']").hide();
+	$("#costItem optgroup[label = '付押金']").find("option[value != '']").hide();
+	$("#costItem optgroup[label = '收押金']").hide();
+	$("#costItem optgroup[label = '收押金']").find("option[value != '']").hide();
+	$("#projectName option[value !='']").remove();
+}*/

@@ -1,0 +1,10 @@
+				
+//移除费用科目
+				//$("#costItem option[value !='押金']").remove();
+				//先隐藏除了“付押金”以外的科目
+				$("#costItem optgroup[label !='付押金']").hide();
+				$("#costItem optgroup[label !='付押金']").find("option[value != '']").hide();
+				//再显示隐藏的“收押金”以外的科目
+				$("#costItem optgroup[label = '收押金']").show();
+				$("#costItem optgroup[label = '收押金']").find("option[value != '']").show();
+				//$("#projectName option[value !='']").remove();

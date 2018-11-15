@@ -1,0 +1,50 @@
+<script type="text/javascript">
+   function getSelectedValue(name)
+   {
+     var obj = document.getElementById(name); //selectid
+    var index = obj.selectedIndex; // 选中索引
+    var text = obj.options[index].text; // 选中文本
+    var year = obj.options[index].value; // 选中值
+   }
+
+</script>
+
+<select name="year" id="select_id" onchange="getSelectedValue('select_id')">
+     {foreach item=item from=$year_array}
+     <option value="{$year}" {if $year==$item}selected="selected"{/if}>{$item}</option>
+     {/foreach}
+</select>年
+
+//检查航班分段的录入
+	 checkFltMlgAdd : function(){
+
+		//var tdNum		= parseInt($('copyNum').value)+1;
+		//用document.getElementsByName获取数组
+		//通过下标获取值document.getElementsByName("flightNo")[0].value;
+		var fltNo			=	document.getElementsByName("flightNo");			//获取长度
+		for(var i=0; i<= fltNo.length; i++){
+			var dayNum		=	document.getElementsByName("dayNum")[i].value;
+			var sPoint		=	document.getElementsByName("startPoint")[i].value;
+			var sTime		=	document.getElementsByName("startTime")[i].value;
+			var ePoint		=	document.getElementsByName("endPoint")[i].value;
+			var eTime		=	document.getElementsByName("endTime")[i].value;
+			if(dayNum==null || dayNum=="")
+			{
+				alert("请检查【第几天】填写是否完整！");
+			}
+			if(sPoint==null || sPoint=="")
+			{
+				alert("请填写【起点】填写是否完整！");
+			}
+			if(sTime==null || sTime=="")
+			{
+				alert("请检查【起飞时间】！");
+			}
+	//		if(ePoint==null || ePoint=="")
+//			{
+//				alert("请检查【终点】填写是否完整！");
+//			}
+//			if(eTime==null || eTime=="")
+//			{
+//				alert("请检查【到达时间】填写是否完整！");
+//			}

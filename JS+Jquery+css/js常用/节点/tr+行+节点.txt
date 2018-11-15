@@ -1,0 +1,9 @@
+	
+_row是当前某行某列的节点【object】
+	var trNumObj = _row.childNodes[1];
+	var tdValue	 = parseInt(trNumObj.innerHTML);
+	var upTrNum = parseInt(_row.rowIndex);
+	var upValue = parseInt(_row.parentNode.rows[upTrNum].cells[0].innerHTML);
+	
+	trNumObj.innerHTML = parseInt(tdValue-1); 
+	_row.parentNode.rows[upTrNum].cells[0].innerHTML = parseInt(tdValue-1);

@@ -1,0 +1,56 @@
+方法一: 
+复制代码 代码如下:
+
+var ary = new Array("111","22","33","111"); 
+
+var s = ary.join(",")+","; 
+
+for(var i=0;i<ary.length;i++) { 
+
+if(s.replace(ary[i]+",","").indexOf(ary[i]+",")>-1) { 
+
+alert("数组中有重复元素：" + ary[i]); 
+
+break;外语屋 
+
+} 
+
+} 
+
+方法二: 
+复制代码 代码如下:
+
+var ary = new Array("111","22","33","111"); 
+
+var nary=ary.sort(); 
+
+for(var i=0;i<ary.length;i++){ 
+
+if (nary[i]==nary[i+1]){ 
+
+alert("数组重复内容："+nary[i]); 
+
+} 
+
+} 
+
+方法三: 内陆运输 
+复制代码 代码如下:
+
+function isRepeat(arr){ 
+
+var hash = {}; 
+
+for(var i in arr) { 
+
+if(hash[arr[i]]) 
+
+return true; 
+
+hash[arr[i]] = true; 
+
+} 
+
+return false; 
+
+} 

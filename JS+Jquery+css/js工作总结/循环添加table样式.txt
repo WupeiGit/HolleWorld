@@ -1,0 +1,90 @@
+var temp={
+	
+	//增加num个table
+	AddFltMlgNum : function(objNum, addNum){
+		var strTab	='';
+		var tbNum	=$("addFltMlgNum");//获取隐藏域对象
+		
+		tbNum.value=parseInt(tbNum.value)+objNum;//获取隐藏域的值并自增
+		//alert("num="+tbNum.value)
+		if(tbNum.value == 1){
+			$("btnCut").disabled = true;//禁用
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			$("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			$("btnAdd").disabled = true;
+		}
+		
+		for(var i=1 ; i<tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16" style="padding-bottom:5px">'
+			
+							+'<tr>'
+								+'<td width="10%" align="right">第 '+i+' 条<span class="font_red">*</span> 航班号: &nbsp;：</td>'
+								+'<td><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第一天 &nbsp;：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起点: &nbsp;：</td>'
+								+'<td><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起飞时间 &nbsp;：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td colspan="4" width="10%" align="right"><span class="font_red">*</span> 是否过夜: &nbsp;'
+								+'是<input type="radio" name="night'+i+'" id="isNight'+i+'" value="1"/>&nbsp;否<input type="radio" name="night'+i+'" id="notNight'+i+'" value="0"/></td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+		}
+		
+	 },
+	
+	//减少num个table
+	CutFltMlgNum : function(objNum, addNum){
+		var strTab	='';
+		var tbNum	=$("addFltMlgNum");//获取隐藏域对象
+		
+		tbNum.value=parseInt(tbNum.value) - 1;//获取隐藏域的值并自增
+		//alert("num="+tbNum.value)
+		if(tbNum.value == 1){
+		    $("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = true;//禁用
+				//alert(1);
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			//alert(2);
+			$("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			//alert(3);
+			$("btnAdd").disabled = true;
+		}
+		
+		for(var i=1 ; i<tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16" style="padding-bottom:5px">'
+		                  	+'<tr>'
+								+'<td width="10%" align="right" colspan="4">第<span class="font_red"> '+i+' </span> 条</td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 航班号: &nbsp;：</td>'
+								+'<td><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第一天 &nbsp;：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起点: &nbsp;：</td>'
+								+'<td><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起飞时间 &nbsp;：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td colspan="4" width="10%" align="right"><span class="font_red">*</span> 是否过夜: &nbsp;'
+								+'是<input type="radio" name="night'+i+'" id="isNight'+i+'" value="1"/>&nbsp;否<input type="radio" name="night'+i+'" id="notNight'+i+'" value="0"/></td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+		}
+		
+	 }
+	}

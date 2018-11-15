@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>费用申请列表</title>
+<script type="text/javascript">
+	window.onload = function(){
+		title = ['城市1', '城市2', '城市3', '城市4', '城市5', '城市6', '城市7', '城市8', '城市9', '城市10', '城市11'];
+		//value = ['city1', 'city2', 'city3', 'city4', 'city5', 'city6', 'city7', 'city8', 'city9', 'city10', 'city11'];  
+		str = "<select>";
+		for (var i = 0; i < title.length; i++)
+		{  
+			str += "<option value='city" + i + "'> " + MonHead[i] + "</option>\r\n";  
+		}  
+		document.getElementById("citySelect").innerHTML = str +"</select>";  
+	}
+</script>
+
+</head>
+<body>
+	<span id="citySelect"><select name='city' id="city" onchange="certYearcertMonth(this.value)">  
+                       <option value="">请选择</option>  
+                    </select>  </span>
+</body>

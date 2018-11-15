@@ -1,0 +1,438 @@
+-----------------------------------------------------------------------Js
+
+var FlightMlg = {
+
+	//增加num个table
+	AddFltMlgNum : function(objNum, addNum){
+		
+		var strTab	='';
+		var tbNum	= $("addFltMlgNum");				//获取隐藏域对象
+		
+		tbNum.value = parseInt(tbNum.value)+objNum;		//获取隐藏域的值并自增
+
+		if(tbNum.value == 1){
+			$("btnCut").disabled = true;//禁用
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			$("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			$("btnAdd").disabled = true;
+		}
+		
+		for(var i=1 ; i<=tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16"  style="margin-bottom:5px;">'
+				            +'<tr>'
+								+'<td width="10%" align="right" colspan="4">&nbsp;&nbsp; 第<span class="font_red"> '+i+' </span> 条</td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 航班号：</td>'
+								+'<td width="40%"><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第几天：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起点：</td>'
+								+'<td width="40%"><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起飞时间：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+								+'<span id="showSTime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 终点：</td>'
+								+'<td width="40%"><input type="text" name="endPoint'+i+'" id="endPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 达到时间：</td>'
+								+'<td><input type="text" name="leaveTime'+i+'" id="leaveTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+							    +'<span id="showETime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 是否过夜：</td>'
+								+'<td colspan="3"><input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="1"/>是&nbsp;&nbsp; <input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="0"/>否</td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+		}
+		
+	 },
+
+	//减少num个table
+	CutFltMlgNum : function(objNum, addNum){
+		var strTab	='';
+		var tbNum	=$("addFltMlgNum");//获取隐藏域对象
+		
+		tbNum.value=parseInt(tbNum.value) - 1;//获取隐藏域的值并自增
+		if(tbNum.value == 1){
+		    $("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = true;//禁用
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			$("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			$("btnAdd").disabled = true;
+		}
+		
+		
+		for(var i=1 ; i<=tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16"  style="margin-bottom:5px;">'
+				            +'<tr>'
+								+'<td width="10%" align="right" colspan="4">&nbsp;&nbsp; 第<span class="font_red"> '+i+' </span> 条</td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 航班号：</td>'
+								+'<td width="40%"><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第几天：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起点：</td>'
+								+'<td width="40%"><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起飞时间：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+								+'<span id="showSTime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 终点：</td>'
+								+'<td width="40%"><input type="text" name="endPoint'+i+'" id="endPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 达到时间：</td>'
+								+'<td><input type="text" name="leaveTime'+i+'" id="leaveTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+							    +'<span id="showETime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 是否过夜：</td>'
+								+'<td colspan="3"><input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="1"/>是&nbsp;&nbsp; <input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="0"/>否</td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+		}
+		
+	},
+	 
+	 //检查航班分段的录入
+	 checkFltMlgAdd : function(){
+		var tdNum		= $('addFltMlgNum');
+		 
+		for(var i=1; i<=tdNum.value; i++){
+			
+ 			if($('flightNo'+i).value.blank()){
+				alert("请填写航班分段[航班编号]！");
+				$('flightNo'+i).focus();
+				return false;
+			}else if($('dayNum'+i).value.blank()){
+				alert("请填写航班分段[第几天]！");
+				$('dayNum'+i).focus();
+				return false;
+			}else if($('startPoint'+i).value.blank()){
+				alert("请选择航班[起点]！");
+				$('startPoint'+i).focus();
+				return false;
+			}else if($('startTime'+i).value.blank()){
+				alert("请选择航班[起飞时间]！");
+				$('startTime'+i).focus();
+				return false;
+			}else if($('endPoint'+i).value.blank()){
+				alert("请填写航班分段[终点]！");
+				$('endPoint'+i).focus();
+				return false;
+			}else if($('leaveTime'+i).value.blank()){
+				alert("请填写航班分段[达到时间+"+i+"]！");
+				$('leaveTime'+i).focus();
+				return false;
+			}else if((document.getElementsByName("isNight"+i)[0].checked == false) && (document.getElementsByName("isNight"+i)[1].checked == false)){
+				alert("请填写航班分段[是否过夜]！");
+					return false;
+			}else{
+				return true;
+			}
+		}
+		
+	},
+	
+	//------------获取开始时间（精确到时分秒）
+	getMileageSTimes : function(){
+		var tdNum			= $('addFltMlgNum');
+		var strHours 		= '';
+		var strMinuns		= '';
+		var strSeconds		= '';
+        
+		for(var i=1; i<=tdNum.value; i++){
+			//-----------时
+			strHours += '<select name="sltSHour'+i+'" id="sltSHour'+i+'">'
+				for(var h=0; h<=23; h++){
+					if(h<10){
+						strHours += '<option>0'+h+'</option>'
+					}else{
+						strHours += '<option>'+h+'</option>'
+					}
+				}
+			strHours += '</select>'
+
+			//----------分
+			strMinuns += '<select name="sltSMin'+i+'" id="sltSMin'+i+'">'
+	
+			for(var j=0; j<60; j++){
+				if(j<10){
+					strMinuns += '<option>0'+j+'</option>'
+				}else{
+					strMinuns += '<option>'+j+'</option>'
+				}
+			}
+			strMinuns += '</select>'
+			
+			//----------秒
+			strSeconds += '<select name="sltSSeconds'+i+'" id="sltSSeconds'+i+'">'
+			
+			for(var k=0; k<60; k++){
+				if(k<10){
+					strSeconds += '<option>0'+k+'</option>'
+				}else{
+					strSeconds += '<option>'+k+'</option>'
+				}
+			}
+			strSeconds += '</select>'
+			
+			$("showSTime"+i).innerHTML = strHours +' '+'时'+' '+ strMinuns +' '+'分'+' '+ strSeconds +' '+ '秒'+' ';
+			//循环完一次清空一次
+			strHours 		= '';
+			strMinuns		= '';
+			strSeconds		= '';
+		}
+	},
+	
+	//------------获取结束时间（精确到时分秒）
+	getMileageETimes : function(){
+		var tdNum			= $('addFltMlgNum');
+		var strHours 		= '';
+		var strMinuns		= '';
+		var strSeconds		= '';
+        
+		for(var i=1; i<=tdNum.value; i++){
+			//-----------时
+			strHours += '<select name="sltEHour'+i+'" id="sltEHour'+i+'">'
+				for(var h=0; h<=23; h++){
+					if(h<10){
+						strHours += '<option>0'+h+'</option>'
+					}else{
+						strHours += '<option>'+h+'</option>'
+					}
+				}
+			strHours += '</select>'
+
+			//----------分
+			strMinuns += '<select name="sltEMin'+i+'" id="sltEMin'+i+'">'
+	
+			for(var j=0; j<60; j++){
+				if(j<10){
+					strMinuns += '<option>0'+j+'</option>'
+				}else{
+					strMinuns += '<option>'+j+'</option>'
+				}
+			}
+			strMinuns += '</select>'
+			
+			//----------秒
+			strSeconds += '<select name="sltESeconds'+i+'" id="sltESeconds'+i+'">'
+			
+			for(var k=0; k<60; k++){
+				if(k<10){
+					strSeconds += '<option>0'+k+'</option>'
+				}else{
+					strSeconds += '<option>'+k+'</option>'
+				}
+			}
+			strSeconds += '</select>'
+			
+			$("showETime"+i).innerHTML = strHours +' '+'时'+' '+ strMinuns +' '+'分'+' '+ strSeconds +' '+ '秒'+' ';
+			//循环完一次清空一次
+			strHours 		= '';
+			strMinuns		= '';
+			strSeconds		= '';
+		}
+	}
+}
+
+
+----------------------------------------asp
+<!--#include virtual="/inc/action/flightMileageAction.asp"-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>机票资源航段表-添加</title>
+<link href="/style/common.css" type="text/css" rel="stylesheet" />
+<link href="/style/admin.css" type="text/css" rel="stylesheet" />
+<link href="/style/calendar.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/style/js/prototype.js"></script>
+<script type="text/javascript" src="/style/js/common.js"></script>
+<script type="text/javascript" src="/style/js/ajax.js"></script>
+<script type="text/javascript" src="/style/js/alt.js"></script>
+<script type="text/javascript" src="/style/js/calendar.js"></script>
+<script type="text/javascript" src="/style/js/calendar-setup.js"></script>
+<script type="text/javascript" src="/style/js/calendar-zh.js"></script>
+<script type="text/javascript" src="/style/js/flightMileage.js"></script>
+<script type="text/javascript">
+//加载时调用
+window.onload = function(){
+	FlightMlg.AddFltMlgNum(0,$('tdMax').value);	   //初始化传值为0	
+	FlightMlg.getMileageSTimes();                 //开始时间
+	FlightMlg.getMileageETimes();                 //结束时间
+}
+</script>
+</head>
+<%
+Dim rs, strSql, i, row
+Dim flightId:flightId=Request("flightId")
+'break(flightId)
+strSql = " select airId, shortName, ticketId, ticketCompany, scheduleNo, berth, ticketNote, scheduleNote, "&_
+		 " firstNum, freeNum, dayNum, isNight, leaveTime, returnTime, travelCode, inPlace, outPlace, leaveCountry, "&_
+		 " adultPrice, childPrice, taxPrice, isEnable, deptId, teamType, productName, empId, empName "&_
+		 " from v_flight f with(nolock) "&_
+		 " where 1=1 and isShouKe <> 0 and flightId="&flightId
+'break(strSql)
+
+If GetRs(rs, strSql) Then
+	Dim dayNum	: dayNum = Trim(rs("dayNum"))
+End If 
+%>
+
+<body>
+<form name="formFltMlgAdd" action="#" method="post" onsubmit="return FlightMlg.checkFltMlgAdd()">
+<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle6">
+    <tr>
+        <th colspan="10">机票资源航段表-添加</th>
+    </tr>
+    <tr>
+        <td style="padding:10px">
+			<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle16">
+                <tr>
+                	<th colspan="10">机票资源详情</th>
+                </tr>
+                <tr>
+                    <td>
+                       <%
+                         If Not GetRs(rs, strSql) Then
+                            response.Write("<input class=""font_gray"" style=""text-align:center"">暂无数据！</input>")
+                         Else
+                            For row=1 To rs.RecordCount
+                       %>
+                        <table width="100%" cellpadding="3" cellspacing="1" class="tabStyle16" style=" margin-bottom:3px">
+                            <tr>
+                                <td width="8%">预定号</td>
+                                <td width="17%"><strong><%=rs("scheduleNo")%></strong></td>
+                                <td width="8%">航空公司</td>
+                                <td width="17%"><strong><%=rs("shortName")%></strong>&nbsp; 
+                                    <span class="font_gray">（夜航：<%=GetFightIsNightStatus(rs("isNight"))%>）</span></td>
+                                <td width="8%">舱位</td>
+                                <td width="17%"><strong><%=rs("berth")%></strong></td>								
+                                <td width="8%">最初预定人数</td>
+                                <td><strong><%=rs("firstNum")%></strong>&nbsp; <span class="font_gray">人</span></td>
+                            </tr>
+                            <tr>
+                                <td>免票人数</td>
+                                <td><strong><%=rs("freeNum")%></strong>&nbsp; <span class="font_gray">人</span></td>
+                                <td>行程总天数</td>
+                                <td><strong><%=rs("dayNum")%></strong>&nbsp; <span class="font_gray">天</span>
+                                    <input type="hidden" name="tdMax" id="tdMax" value="<%=rs("dayNum")%>" />
+                                </td>
+                                <td>进点</td>
+                                <td><strong><%=rs("inPlace")%></strong></td>
+                                <td>出点</td>
+                                <td><strong><%=rs("outPlace")%></strong></td>
+                            </tr>
+                            <tr>
+                                <td>出境口岸</td>
+                                <td><strong><%=rs("leaveCountry")%></strong></td>
+                                <td>指定组团人</td>
+                                <td><%=getIsGroupPeople(rs("empName"),rs("empId"))%></td>
+                                <td>产品计划</td>
+                                <td class="font_green"><%=GetFightValueIsNull(rs("productName"))%></td>
+                                <td>参考税款</td>
+                                <td><strong><%=rs("taxPrice")%></strong>&nbsp; <span class="font_gray">元</span></td>
+                            </tr>
+                            <tr>			
+                                <td>去程起飞时间</td>
+                                <td><strong><%=rs("leaveTime")%></strong></td>
+                                <td>回程起飞时间</td>
+                                <td><strong><%=rs("returnTime")%></strong></td>
+                                <td>成人票款</td>
+                                <td><strong><%=rs("adultPrice")%></strong>&nbsp; <span class="font_gray">元</span></td>
+                                <td>儿童票款</td>
+                                <td><strong><%=rs("childPrice")%></strong>&nbsp; <span class="font_gray">元</span></td>
+                            </tr>
+                            <tr>
+                                <td>定位记录</td>
+                                <td colspan="9"><%=GetFightValueIsNull(rs("scheduleNote"))%></td>
+                            </tr>
+                            <tr>
+                                <td>票据情况</td>
+                                <td colspan="9"><%=GetFightValueIsNull(rs("ticketNote"))%></td>
+                            </tr>
+                        </table>
+                        <%		rs.MoveNext
+                            If (rs.Bof or rs.Eof) Then Exit For
+                            Next
+                        End If
+                        Call DestoryRs(rs)	   		
+                        %>
+                    </td>
+                </tr>
+			</table>
+            <table width="100%" border="0" cellpadding="3" cellspacing="1" class="tabStyle16">
+                <tr>
+                    <th colspan="10">确定添加-机票资源航段表</th>
+                </tr>
+                <tr>
+                    <td width="10%"> 多航段操作</td>
+                    <td><input type="hidden" name="addFltMlgNum" id="addFltMlgNum" value="1"/>
+                        <input type="button" name="btnAdd" id="btnAdd" class="btn_bg_style01" onclick="FlightMlg.AddFltMlgNum(1,<%=dayNum%>);FlightMlg.getMileageSTimes();FlightMlg.getMileageETimes();" value="增加航段" />
+                        <input type="button" name="btnRemove" id="btnCut" class="btn_bg_style01" onclick="FlightMlg.CutFltMlgNum(<%=dayNum%>);FlightMlg.getMileageSTimes();FlightMlg.getMileageETimes();" value="减少航段" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:5px"><div id="showFmTab"></div></td>
+                </tr>
+                <tr>
+                	<td>&nbsp;</td>
+               		<td><input type="submit" name="sbmitAddFM" id="sbmitAddFM" class="btn_bg_style04_50" value="提交"/>
+                    	<input type="reset" class="btn_bg_style02_50" value="重置" />
+                    	<input type="button" name="btnCanl" id="btnCanl" class="btn_bg_style02_50" value="取消"/>
+                    </td>
+                </tr>
+            </table>          
+       </td>
+    </tr>
+    <tr>
+    	<td>
+			<%'	Dim Num	: Num = 23
+'					
+'				For i = 0 To num
+'					If ((i >=0) and (i<10)) Then
+'						i = "0"&i
+'					End If
+'					Response.Write i&"</br>"
+'				Next
+'			%>
+			<span id="showSTime1">&nbsp;</span></br>
+            <span id="showSTime2">&nbsp;</span></br>
+            <span id="showSTime3">&nbsp;</span></br>
+            <span id="showSTime4">&nbsp;</span></br>
+            <span id="showSTime5">&nbsp;</span></br>
+        </td>
+    </tr>
+</table>
+</form>
+</body>
+</html>
+
+------------------------------------------------------------------------------
+<script type="text/javascript">
+window.onload=function()
+{ 
+var yearValue = $('spanYear');
+alert(yearValue);
+	yearValue += '<select name="yearValue" id="yearValue">'
+		for(var j=0; j<60; j++){
+				yearValue += '<option>'+j+'</option>'
+		}
+	yearValue += '</select>'
+	alert(yearValue);
+}
+</script>

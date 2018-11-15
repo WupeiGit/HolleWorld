@@ -1,0 +1,41 @@
+应用
+
+第一步：JS中给SELECT中填充值
+
+function loadSelect()                        
+{                        
+    var ds = AddNews.GetCatogory().value;                    
+                        
+                        
+    for (var i = 0;i< ds.Tables[0].Rows.length;i++)                    
+    {                    
+        var str = ds.Tables[0].Rows[i].CatogoryName;                
+                        
+        //往select中填充值                
+        var obj = document.getElementByIdx_x("select1");                
+        option = new Option(str,i);                
+        obj.options.add(option);                
+    }                    
+}                        
+
+ 
+
+第二步：JS中取得SELECT中现在选中的值
+
+//SELECT1是整个SELECT的ID                
+obj = document.getElementByIdx_x("Select1");                
+index = obj.selectedIndex;                
+var strCompanyType = obj.options[index].text;                
+
+ 
+
+第三步：JS中让某个值显示("例如：我们")
+
+obj = document.getElementByIdx_x("Select1");                    
+for (var i = 0;i < obj.options.length;i++)                    
+{                    
+    if (obj.options[i].text == "我们")                
+    {                
+        obj.options[i].selected = true;            
+    }                
+}     

@@ -1,0 +1,110 @@
+比较简单的模拟,文本框输入CompanyName,然后
+搜索SqlServer2000 里NorthWind数据库 Suppliers表的CompanyName字段, 四个文件
+1 .AutoComplete.htm [运行代码] [复制到剪贴板] [ ± ]CODE: <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>输入自动完成</title>
+    <script language="javascript">         var txtInput;         var currentIndex = -1;         //初始化参数,和下拉表位置
+        function initPar()             txtInput = document.getElementById("txtCompanyName");             setPosition();                 function setPosition()             var width = txtInput.offsetWidth;
+            var left = getLength("offsetLeft");
+            var top = getLength("offsetTop") + txtInput.offsetHeight;             divContent.style.left = left + "px";
+            divContent.style.top = top + "px";
+            divContent.style.width = width + "px";                 function getLength(attr)             var offset = 0;
+            var item = txtInput;
+            while (item)                 offset += item[attr];
+                item = item.offsetParent;             return offset;         function autoComplete()             //如果按下 向上, 向下 或 回车
+            if (event.keyCode == 38 || event.keyCode == 40 || event.keyCode == 13)                 //选择当前项
+                selItemByKey();             else //向服务器发送请求                 //如果值为空
+                if (txtInput.value == "")                     divContent.style.display='none';
+                    return;                 //恢复下拉选择项为 -1
+                currentIndex = -1;                 //开始请求
+                requestObj = new ActiveXObject("Microsoft.XMLHTTP");
+                requestObj.onreadystatechange = displayResult;
+                requestObj.open("POST", "AutoComplete.aspx?ts=" + new Date().toLocaleString(), true);
+                requestObj.send(txtInput.value);         }         //显示结果
+        function displayResult()             if (requestObj.readyState == 4)                     showData();
+                    divContent.style.display = "";         }         //显示服务器返回的结果 ,并形成下拉表
+        function showData()             //获取数据
+            var doc = new ActiveXObject("MSXML2.DOMDocument.3.0");
+            doc.loadXML(requestObj.responseText);             //显示数据的xslt
+            var docStyle = new ActiveXObject("MSXML2.FreeThreadedDOMDocument");
+            docStyle.async = false;
+            docStyle.load("list.xslt");             var docTemplate = new ActiveXObject("MSXML2.XSLTemplate");
+            docTemplate.stylesheet = docStyle;             //通过xslt转换xml数据
+            var processor = docTemplate.createProcessor();
+            processor.input = doc;
+            processor.transform();
+            var res = processor.output;             //显示转后后的结果
+            divContent.innerHTML = res;                 function selItemByKey()             //下拉表
+            var tbl = document.getElementById("tblContent");
+            if (!tbl)                 return;             //下拉表的项数
+            var maxRow = tbl.rows.length;             if (event.keyCode == 38 && currentIndex > 0)                 currentIndex--;             //向下
+            else if (event.keyCode == 40 && currentIndex < maxRow-1)                 currentIndex++;             //回车
+            else if (event.keyCode == 13)                 selValue();
+                return;            
+            clearColor();
+            txtInput.value = tbl.rows[currentIndex].innerText;
+            //设置当前项背景颜色为blue 标记选中
+            tbl.rows[currentIndex].style.backgroundColor = "InfoBackground";                 function clearColor()             var tbl = document.getElementById("tblContent");
+            for (var i = 0; i < tbl.rows.length; i++)                     tbl.rows[i].style.backgroundColor = "";         }         //选择下拉表中当前项的值 ,用于按回车或鼠标单击选中当前项的值
+        function selValue()             if (event.keyCode != 13)                 var text = event.srcElement.innerText;
+                txtInput.value = text;             initList();                 function setDisplay()             //获取当前活动td的表格
+            if (document.activeElement.tagName == "TD")                 var tbl = document.activeElement.parentElement.parentElement.parentElement;                 if (tbl.id != "tblContent")                     initList();                 return;            
+            initList();         }         function initList()             divContent.style.display='none';
+            divContent.innerHTML = "";
+            currentIndex = -1;     </script>
+</head>
+<body onload="initPar()">
+CompanyName<input type="text" id="txtCompanyName" onkeyup="autoComplete()" onblur="setDisplay();" style="width:400px"/>
+<!-- 显示下拉表的div-->
+<div id="divContent" style="display:none; position:absolute; ">
+</div>
+</body>
+</html> AutoComplete.aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="AutoComplete.aspx.cs" Inherits="AJAXBaseHome.AutoComplete" %> AutoComplete.aspx.cs
+[运行代码] [复制到剪贴板] [ ± ]CODE:
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Configuration;
+using System.Collections;
+using System.IO;
+using System.Text;
+using System.Web;
+using System.Web.Security;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+using System.Web.UI.WebControls.WebParts;
+using System.Web.UI.HtmlControls;
+using System.Web.Configuration; namespace AJAXBaseHome     public partial class AutoComplete : System.Web.UI.Page         private static string conString = WebConfigurationManager.ConnectionStrings["myData"].ConnectionString;         protected void Page_Load(object sender, EventArgs e)             string input = GetInput();
+            Response.Write(GetCompanyName(input));         private string GetInput()             Stream s = Request.InputStream;
+            int count = 0;
+            byte[] buffer = new byte[1024];
+            StringBuilder builder = new StringBuilder();
+            while ((count = s.Read(buffer, 0, 1024)) > 0)                 builder.Append(Encoding.UTF8.GetString(buffer, 0, count));
+            }             return builder.ToString();
+        }         private string GetCompanyName(string input)             using (SqlConnection con = new SqlConnection(conString))                 SqlCommand command = new SqlCommand("select * from suppliers where CompanyName like @Name", con);
+                command.Parameters.Add(new SqlParameter("@name", input + "%"));
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                DataSet ds = new DataSet();
+                adapter.Fill(ds);
+                return ds.GetXml();         } } xslt文件 用于显示xml数据 [运行代码] [复制到剪贴板] [ ± ]CODE: <?xml version="1.0" encoding="UTF-8" ?>
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:output method="html"/>
+  <xsl:template match="/">
+    <xsl:apply-templates/>
+  </xsl:template>
+  <xsl:template match="NewDataSet">
+    <table id="tblContent" style="background-color:GrayText">
+    <xsl:for-each select="Table">
+      <tr>
+        <!--td中单击时选择当前值, 鼠标在上时更改行背景颜色,鼠标离开后清除背景颜色-->
+        <td onclick="selValue()" style="cursor:hand" onmouseover="clearColor();this.parentElement.style.backgroundColor='InfoBackground'" onmouseout="clearColor()">
+          <xsl:value-of select="CompanyName"/>
+        </td>
+      </tr>
+    </xsl:for-each>
+    </table>
+  </xsl:template>
+</xsl:stylesheet>
+来源:www.soasp.net 杭州网络公司 

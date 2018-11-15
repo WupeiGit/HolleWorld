@@ -1,0 +1,19 @@
+
+相关网址：http://blog.csdn.net/u012169411/article/details/16804233
+
+/**
+ * 阻止冒泡事件
+ */
+function cancelBubble(evt){
+	if (window.event) {
+		event.cancelBubble = true;
+	}else if (evt){
+		evt.stopPropagation();
+	}
+}
+
+案例：
+<td nowrap="nowrap"><input type="text" name="vatTaxMoney" id="vatTaxMoney<s:property value="#bcd.count" />" style="border:0px;" readonly="readonly" onfocus="this.blur()" onclick="cancelBubble(event);" value="<s:property value="vatTaxMoney" />" size="8" />
+<!-- onblur="bcd.toSureVatTaxMoney(this,<s:property value="bcdId" />);" -->
+调用之后，原来的触发事件就会消失。
+

@@ -1,0 +1,25 @@
+----------------------html
+<tr>
+					<td><table width="100%" border="0" cellpadding="0" cellspacing="15px" id="tbOrderOutDetialAdd">
+						<tbody id="tableSignUpInfo">
+							<tr id="trFirst" style="display:block;">
+                            	<td width="2%">1</td>
+								<td width="10%"><span class="font_red">*</span> 商品（编码-名称-库存量）:</td>
+								<td width="15%"><input type="text" name="commodityTitle" id="commodityTitle" value="" style="border:0px;color:gray;" readonly="readonly"/>
+												<input type="hidden" name="hidCommodityCode" id="hidCommodityCode" value=""/></td>
+								<td width="10%"><span class="font_red">*</span> 数 量:</td>
+								<td width="15%"><input type="text" name="amount" id="amount"/>&nbsp; <span class="font_gray">件</span></td>
+								
+								<td width="10%"><span class="font_red">*</span>分配部门:</td>
+								<td width="15%"><%=GetCompDept(conn,"allotDept","allotDept","-=请选择部门=-","","","","HTML")%></td>
+								
+							</tr>
+						</tbody>
+						</table>
+					</td>
+				</tr>
+
+
+-------------------------js
+$('tbOrderOutDetialAdd').rows[0].cells[0].innerHTML = XXX:
+$('trFirst').childNodes[0].innerHTML = iCnt+1;				

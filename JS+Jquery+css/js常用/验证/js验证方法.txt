@@ -1,0 +1,36 @@
+//验证只能是字母，不是自动替换成空
+	if(ePoint[i].value!='NOT_TRIM'){
+		ePoint[i].value=ePoint[i].value.replace(/(^\s*)|(\s*$)/g, "");
+		alert("只能为字母");
+	}
+
+
+
+2.--用JS如何验证用户输入的用户名只能是汉字并且在2-4位之间
+<input type="text" id="v" value="" />
+ 
+<input type="button" value="验证" onclick="rr(document.getElementById('v').value)">
+ 
+<span id="t" style="color:#ff0000"></span>
+ 
+<script>
+ 
+function rr(val){
+ 
+ reg = /^[\u4E00-\u9FA5]{2,4}$/;
+ 
+ if(!reg.test(val)){
+ 
+  document.getElementById('t').innerHTML = '不符合标准！';
+ 
+ }else{
+ 
+  document.getElementById('t').innerHTML = '符合标准！';
+ 
+ }
+ 
+}
+ 
+</script>
+ 
+</body>

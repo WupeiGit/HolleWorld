@@ -1,0 +1,205 @@
+package com.mx.travel.fi.action;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+import org.mx.travel.util.BaseUtil;
+import org.mx.travel.util.WSUtil;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.mx.travel.base.action.BaseAction;
+import com.mx.travel.fi.financeManager.pojo.FinanceManager;
+import com.mx.travel.fi.financeManager.pojo.FinanceManagerOp;
+import com.mx.travel.fi.ws.FinanceManagerClient;
+import com.mx.travel.fi.ws.FinanceManagerOpClient;
+import com.mx.travel.my.list.StructureList;
+import com.mx.travel.my.structure.api.helper.DepartmentHelper;
+import com.mx.travel.my.structure.api.helper.StructureHelper;
+import com.mx.travel.my.structure.pojo.Department;
+import com.mx.travel.my.structure.pojo.Structure;
+import com.mx.travel.util.Page;
+
+/** 
+ * @author 作者:wupei 
+ * @version 创建时间：2015-10-14 下午3:40:43 
+ * 类说明 
+ */
+@SuppressWarnings("serial")
+public class FinanceManagerAction extends BaseAction{
+	private FinanceManagerClient financeManagerClient;
+	private FinanceManagerOpClient financeManagerOpClient;
+	private Integer fmId;
+	private String empCode;
+	private String empName;
+	private String deptName;
+	private String struCode;
+
+	public FinanceManagerClient getFinanceManagerClient() {
+		return financeManagerClient;
+	}
+
+	public void setFinanceManagerClient(FinanceManagerClient financeManagerClient) {
+		this.financeManagerClient = financeManagerClient;
+	}
+	
+	public FinanceManagerOpClient getFinanceManagerOpClient() {
+		return financeManagerOpClient;
+	}
+
+	public void setFinanceManagerOpClient(
+			FinanceManagerOpClient financeManagerOpClient) {
+		this.financeManagerOpClient = financeManagerOpClient;
+	}
+
+	public String getEmpCode() {
+		return empCode;
+	}
+
+	public void setEmpCode(String empCode) {
+		this.empCode = empCode;
+	}
+
+	public String getEmpName() {
+		return empName;
+	}
+
+	public void setEmpName(String empName) {
+		this.empName = empName;
+	}
+
+	public String getDeptName() {
+		return deptName;
+	}
+
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+
+	public Integer getFmId() {
+		return fmId;
+	}
+
+	public void setFmId(Integer fmId) {
+		this.fmId = fmId;
+	}
+
+	public String getStruCode() {
+		return struCode;
+	}
+
+	public void setStruCode(String struCode) {
+		this.struCode = struCode;
+	}
+
+	/**
+	 * 
+	 * @description 功能说明：加载费用人员负责属性页面;
+	 * @creator 创建人：wupei; 
+	 * @version 创建时间：2015-10-14 下午4:33:55 
+	 * @return
+	 */
+	public String loadFinanceManagerFieldManage(){
+		//默认公司
+		if(BaseUtil.isEqual(struCode)){
+			struCode = getSysSession().getStructure().getStruCode();
+		}
+		
+		String hql="from FinanceManager where 1=1";
+		//查询条件判断
+		if(!BaseUtil.isEqual(empCode)){
+			hql += " and empcode = '"+ empCode +"'";
+		}
+		if(!BaseUtil.isEqual(empName)){
+			hql += " and empName like '%"+ empName +"%'";
+		}
+		if(!BaseUtil.isEqual(struCode)){
+			hql += " and struCode = '"+ struCode +"'";
+		}
+		
+		Page page = new Page(getActionName(), getQueryString());
+		if (page.isFirstLoad()) {
+			page.setSearchKeys("empCode",empCode);
+			page.setSearchKeys("empName",empName);
+			//page.setSearchKeys("deptName",deptName);
+			page.setSearchKeys("struCode",struCode);
+			page.setItemCount(financeManagerClient.findRecordsCount("select count(*)" + hql).intValue());
+		}
+		//分页显示
+		List<FinanceManager> fMList =  financeManagerClient.findByPage(hql, page.getStartNo(), page.getPageSize());
+		if(fMList!=null && fMList.size()>0){
+			//循环赋集合到主表（财务人员表）中
+			for(int i=0; i<fMList.size(); i++){
+				FinanceManager fiManager = fMList.get(i);
+				List<FinanceManagerOp> opList = financeManagerOpClient.findAll("from FinanceManagerOp fmf where fmf.financeManager.fmId ="+fiManager.getFmId());
+				fiManager.setFinanceManagerOpList(opList);
+			}
+		}
+		setRequestAttribute("companySelect", StructureList.getSelectByAll("struCode", "struCode", "", "struCode", "abbrCn", struCode, new String[] { }, new String[] { }));
+		setRequestAttribute("financeManagerList", fMList);
+		setRequestAttribute(Page.PAGE_INFO, page.getPageInfo());
+		//System.out.println(hql);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 
+	 * @description 功能说明：加载修改或者更新页面;
+	 * @creator 创建人：wupei; 
+	 * @version 创建时间：2015-10-21 上午11:25:32 
+	 * @return
+	 */
+	public String loadFinanceManagerAddOrUpd(){
+		if(fmId != null && fmId != 0){
+			//修改页面显示值
+			FinanceManager  fm = financeManagerClient.getFinanceManagerById(fmId);
+			//财务人员
+			setRequestAttribute("fm", fm);
+			//操作
+			List<FinanceManagerOp> opList = financeManagerOpClient.findAll("from FinanceManagerOp fop where fop.financeManager.fmId = "+fmId);
+			/*if(opList != null && opList.size() != 0){
+				String[] opEmpCodeArr = new String[opList.size()];
+				String[] opEmpNameArr = new String[opList.size()];
+				for(int i= 0; i<opList.size(); i++){
+					opEmpCodeArr[i] = opList.get(i).getEmpCode();
+					opEmpNameArr[i] = opList.get(i).getEmpName();
+				}
+				String opEmpCodes = BaseUtil.jointStrarrToStr(opEmpCodeArr).replace("'", "");
+				String opEmpNames = BaseUtil.jointStrarrToStr(opEmpNameArr).replace("'", "");
+				setRequestAttribute("opEmpCodes", opEmpCodes);
+				setRequestAttribute("opEmpNames", opEmpNames);
+			}*/
+			setRequestAttribute("financeManagerOpList", opList);
+		}
+		//操作公司下拉列表
+		setRequestAttribute("opStruSelect", StructureList.getSelectByAll("opStruCode", "opStruCode", "全部公司", "struCode", "abbrCn", "", new String[] {"onchange"}, new String[] {"toShowSltOpStruName(this);"}));
+		setFmId(fmId);
+		return SUCCESS;
+	}
+
+	/**
+	 * 
+	 * @description 功能说明：根据empCode和struCode查询财务操作对照表;
+	 * @creator 创建人：gaohuan; 
+	 * @version 创建时间：2015-12-30
+	 * @return
+	 */
+	public void getFMOByEmpCAndStruC(){
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String opEmpCode = request.getParameter("opEmpCode");
+		String opStruCode = request.getParameter("opStruCode");
+		String hql="from FinanceManagerOp where empCode ='"+opEmpCode+"' and struCode='"+opStruCode+"'";
+		List<FinanceManagerOp> opList = financeManagerOpClient.findAll(hql);
+		String state="";
+		if(!BaseUtil.isEqual(opList)){
+			state="0";
+		}else{
+			state="1";
+		}
+		printContent(state);
+	}
+	
+}

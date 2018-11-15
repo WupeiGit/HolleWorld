@@ -1,0 +1,10 @@
+function getRadioSltValue(element){
+	var eleNames = document.getElementsByName(element);
+	var checkedValue = 0;
+	for(var i= 0; i< eleNames.length; i++){
+		if(eleNames[i].checked == true){
+			checkedValue = eleNames[i].value;
+		}
+	}
+	return checkedValue;
+}

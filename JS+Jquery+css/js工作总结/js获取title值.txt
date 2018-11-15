@@ -1,0 +1,1 @@
+Object.getAttribute('属性名')例如:var myname = document.getElementById('myid').getAttribute('name');getAttribute可以用来取得标准属性值,也可用于获取自定义属性值.与其对应的方法是setAttribute()

@@ -1,0 +1,326 @@
+-------------------------------------js
+//审核
+var Approval = {
+		// 详情审核页面全选与反选
+		selectAllLineByAprr : function(elementName){
+			var elements 	= document.getElementsByName(elementName);
+			var strBcdIds	= $('strBcdIds').value;
+				strBcdIds	= strBcdIds.substring(0,strBcdIds.length-1);
+			var arrBcdIds	= strBcdIds.split(',');
+			
+			for(var i = 0; i < elements.length; i++){
+				elements[i].checked = event.srcElement.checked;//选中
+				Approval.selectThisLineByAppr(elements[i].parentNode, elements[i], arrBcdIds[i]);
+			}
+		},
+		// 选中
+		selectThisLineByAppr : function(tdNode, obj, bcdId){
+			var trNode = tdNode.parentNode;
+			if(obj.checked) {
+				trNode.className = 'listSelected';
+				//启用
+				//trNode.childNodes[11].childNodes[0].disabled = false; 
+				$('approveMoney'+bcdId).disabled = false;
+			}else {
+				trNode.className = '';
+				//trNode.childNodes[11].childNodes[0].disabled = true;
+				$('approveMoney'+bcdId).disabled = true;
+			}
+			
+		}
+}
+
+
+------------------------------------------------html
+<form name="frmApprovalDesc" method="post" action="" >
+<table border="0" cellpadding="0" cellspacing="1" class="tabStyle6" style="width:100%">
+  <tr>
+    <th> <% If approvalRole = "ma" Then %>
+      经理—费用详情审核
+      <% ElseIf approvalRole = "fi" Then %>
+      财务—费用详情审核
+      <% ElseIf approvalRole = "fiMa" Then %>
+      财务经理—费用详情（确认）
+      <% ElseIf approvalRole = "ca" Then %>
+      出纳—费用详情（确认）
+      <% End If %>
+    </th>
+  </tr>
+  <tr>
+    <td style="padding:10px">
+      <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tabStyle16" style="margin-bottom:10px;">
+        <tr>
+          <th colspan="30">费用申请单</th>
+        </tr>
+        <tr>
+          <td width="8%"><strong>经办人</strong></td>
+          <td width="10%"><%=p_transactorName%></td>
+          <td width="8%"><strong>经办部门</strong></td>
+          <td width="10%"><%=p_transactorDeptName%></td>
+          <td width="8%"><strong>申请总额</strong></td>
+          <td width="10%"><%=GetMoney(p_sumCost)%></td>
+          <td width="8%"><strong>审批总额</strong></td>
+          <td align="left"><%=GetMoney(p_sumApproveMoney)%></td>
+        </tr>
+        <tr>
+          <td><strong>制单人</strong></td>
+          <td><%=p_creatorName%></td>
+          <td><strong>制单部门</strong></td>
+          <td><%=p_deptName%></td>
+          <td><strong>报销总额</strong></td>
+          <td><%=GetMoney(p_sumPaymentMoney)%></td>
+          <td><strong>约款类别</strong></td>
+          <td><%=ShowIsBorrow(p_isborrow)%>
+          <%
+		  Dim deductNum : deductNum = GetRsToString("select isNull(count(*),0) from fi_paymentBorrowInfo with(nolock) where bcIdPayment = "&p_bcId,"")
+		  If (approvalRole = "fi" and deductNum = 0 and p_transactStatus = 0) Then%>
+         	 &nbsp;&nbsp;<%=CreateSltByApplyType("",p_isborrow,"onchange","Approval.updateIsborrow(this.value)")%><span class="font_gray">(点击下拉框可以改变值)</span>
+          <%Else%>
+          	&nbsp;&nbsp;<select disabled="disabled"><option><%=ShowIsBorrow(p_isborrow)%></option></select>
+          <%End If%></td>
+        </tr>
+        <tr>
+          <td align="right"><strong>单据号</strong></td>
+          <td align="left"><%=p_billNo%></td>
+          <td align="right"><strong>备注</strong></td>
+          <td align="left" colspan="5"><%=p_costNote%></td>
+        </tr>
+      </table>
+      
+      <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tabStyle18" style="margin-bottom:10px;">
+        <tr>
+          <td colspan="30"><% If p_submitStatus = 2 and p_transactStatus = 0 Then%>
+            <input type="button" class="btn_bg_style01_30" onclick="Approval.auditingpassByCost(<%=p_bcId%>,'<%=approvalRole%>');" value="通过" />
+            <input type="button" class="btn_bg_style01_50 font_red" onclick="Approval.auditingunpassByCost(<%=p_bcId%>,'<%=approvalRole%>');" value="不通过" />
+            <% Else %>
+            <input type="button" disabled="disabled" value="通过" />
+            <input type="button" disabled="disabled" value="不通过" />
+            <% End If%>
+            <input type="button" class="btn_bg_style02_30" onclick="toUrl('bsCostApprovalList.asp?approvalRole=<%=approvalRole%>')" value="返回" />
+            <%
+			 If p_isborrow = 0 and approvalRole = "fi" and deductBorrowMoney <> 0 Then
+			 	 Dim deductPriceBySelf,sumApproveOKMoney 
+				 'outalt(strSqlDB&" and a.empCode = "& p_transactorCode &" and a.empName = '"& p_transactorName &"'")
+				 deductPriceBySelf = CDbl(GetRsToString(strSqlDB&" and a.empCode = '"& p_transactorCode &"' and a.empName = '"& p_transactorName &"' ","")) : Call IsNoValue(deductPriceBySelf,0)
+				 sumApproveOKMoney = CDbl(GetRsToString("select IsNull(sum(approveMoney),0) from fi_businessCostDetail with(nolock) where diAudiStatus <> 3 and fiAudiStatus <> 3 and bcId = "&p_bcId,""))
+			%>
+            &nbsp;&nbsp;
+            <span class="font_red">提醒：应收发票总金额：<strong><%=GetMoney(CDbl(sumApproveOKMoney+deductPriceBySelf))%></strong></span>
+            <% End If %></td>
+        </tr>
+        <tr>
+          <th width="2%"><input type="checkbox" onclick="Approval.selectAllLineByAprr('bcdId')" /></th>
+          <th width="2%">序号</th>
+          <th width="5%">年份</th>
+          <th width="5%">月份</th>
+          <th width="8%">费用部门</th>
+          <th width="6%">费用人员</th>
+          <th width="8%">费用类别</th>
+          <th width="8%">费用科目</th>
+          <th width="10%">科目明细</th>
+          <th width="8%">预算总额</th>
+          <th width="6%">预算余额</th>
+          <th width="6%">申请金额</th>
+          <th width="6%">审批金额</th>
+          <!--<th width="6%">冲抵借款后</th>-->
+          <th width="6%">报销金额</th>
+          <th>备注</th>
+          <th width="6%">经理审核</th>
+          <th width="6%">财务审核</th>
+          <th width="6%">财务经理审核</th>
+          <!--<th width="8%">出纳确认</th>-->
+        </tr>
+        <%
+		If Not GetRs(rs, strSql) Then
+			'oulalt(rs.recordCount)
+			Call NoDataTr()
+		Else
+			For row = 1 To rs.RecordCount
+			strBcdIds	= strBcdIds&rs("bcdId")&","
+			sumCostMoney = sumCostMoney+rs("costPrice")
+			sumApprovePrice = sumApprovePrice+rs("approveMoney")
+			sumNum	= rs.RecordCount
+		%>
+        <tr>
+          <td><% If  approvalRole = "ma" And (rs("diAudiStatus") > 1 and rs("fiAudiStatus") > 1) Then %>
+            <input type="checkbox"  disabled="disabled" />
+            <% ElseIf  approvalRole = "fi" And (rs("diAudiStatus") = 1 or rs("diAudiStatus") = 3) Then %>
+            <input type="checkbox"  disabled="disabled" />
+            <% ElseIf  approvalRole = "fi" And ( (rs("fiAudiStatus") > 1 and (rs("baAudiStatus1") > 1 or rs("caAudiStatus") > 1) And UpdateFiMaByBcdId(rs("bcdId")) = False)) Then %>
+            <input type="checkbox"  disabled="disabled" />
+            <% ElseIf  approvalRole = "fiMa" And ((rs("diAudiStatus") = 1 or rs("diAudiStatus") = 3 Or rs("fiAudiStatus") = 1 or rs("fiAudiStatus") = 3) Or (rs("baAudiStatus1") > 1 and rs("caAudiStatus") > 1)) Then %>
+            <input type="checkbox"  disabled="disabled" />
+            <% Else %>
+       			<%'If approvalRole = "fi" and deductBorrowMoney <> 0 Then%>
+            		<!--<input type="checkbox" name="bcdId" id="bcdId<%'=rs("bcdId")%>" onclick="Approval.selectThisLineByFiAppr(this.parentNode, this, <%'=rs("bcdId")%>);" value="<%'=rs("bcdId")%>" />-->
+            	<%'Else%>
+                	<input type="checkbox" name="bcdId" id="bcdId<%=rs("bcdId")%>" onclick="Approval.selectThisLineByAppr(this.parentNode, this, <%=rs("bcdId")%>);" value="<%=rs("bcdId")%>" />
+            	<%' End If %>
+            <% End If %></td>
+          <td><%=row%></td>
+          <td><%=rs("yearValue")%></td>
+          <td><%=rs("monthValue")%></td>
+          <td><%=GetDeptNameById(rs("costDeptId"))%></td>
+          <td><%If rs("costEmpName") <> "" Then%> <%=rs("costEmpName")%> <%Else%> <%=GetCostNameByBcdId(rs("bcdId"))%><% End If %></td>
+          <td><%=rs("categoryName")%></td>
+          <td><%=rs("itemName")%></td>
+          <td><%=GetItemDescNameByDescIdCode(rs("itemCode"),rs("yearValue"),rs("costDeptId"),rs("descId"))%></td>
+          <td title="点击查看历史申请记录" style="text-align:right"><a href="#" onclick="toPublicPopUpMethod('/admin/finance/budget/bsSumAmountDetail.asp?bcId=<%=p_bcId%>&bcdId=<%=rs("bcdId")%>&itemCode=<%=rs("itemCode")%>&year=<%=rs("yearValue")%>&month=<%=rs("monthValue")%>&descId=<%=rs("descId")%>&deptId=<%=rs("costDeptId")%>')"><%=GetMoney(rs("thisMonthSumValue"))%></a></td>
+		  <td  style="text-align:right"><%=GetMoney(rs("thisMonthSumValue")-rs("costPriceSum"))%></td>
+          <td  style="text-align:right"><%=GetMoney(rs("costPrice"))%></td>
+          <td  style="text-align:right"><input type="text" name="approveMoney" id="approveMoney<%=rs("bcdId")%>" onkeyup="Approval.countSumTxtPrice(this);" value="<%=ShowApproveMoney(rs("approveMoney"),rs("costPrice"),rs("diAudiStatus"))%>" disabled="disabled" size="10" maxlength="12" style="text-align:right" /></td>
+         <!-- <td>
+			<%'If rs("diAudiStatus") = 1 or rs("fiAudiStatus") = 1 Then %>
+            	<%'If p_isborrow = 0 and approvalRole = "fi" Then%>
+                <input type="text" name="approveMoney" id="approveMoney<%'=rs("bcdId")%>" onkeyup="Approval.countSumTxtPrice(this);" value="<%'=GetApproveMoneyByBcIdPayment(rs("approveMoney"),sumApprovePrice,p_bcId,row)%>" disabled="disabled" size="10" maxlength="12" style="text-align:right" />  
+                <%'Else %>
+                <input type="text" name="approveMoney" id="approveMoney<%'=rs("bcdId")%>" onkeyup="Approval.countSumTxtPrice(this);" value="<%'=ShowApproveMoney(rs("approveMoney"),rs("costPrice"))%>" disabled="disabled" size="10" maxlength="12" style="text-align:right" />  
+                <%'End If%>
+            <%'Else %>
+                
+               <input type="text" name="approveMoney" id="approveMoney<%'=rs("bcdId")%>" onkeyup="Approval.countSumTxtPrice(this);" value="<%'=rs("approveMoney")%>" disabled="disabled" size="10" maxlength="12" style="text-align:right" /> 
+            <%'End If%>
+		  	</td>-->
+          <td>
+          	 <%If (rs("fiAudiStatus") = 2 and rs("approveMoney") = rs("paymentMoney")) Then%>
+              	<strong class="font_green"><%=GetMoney(rs("paymentMoney"))%></strong>
+              <%ElseIf (rs("fiAudiStatus") = 2 and rs("approveMoney") <> rs("paymentMoney")) Then%>
+             	<strong class="font_red"><%=GetMoney(rs("paymentMoney"))%></strong>
+              <%Else %>
+              	<%=GetMoney(rs("paymentMoney"))%>
+              <%End If%>
+		  </td>
+          <td title="<%=rs("costNote")%>"><%=ShowCostNote(rs("costNote"))%></td>
+          <td><%=GetAudiResult(rs("diAudiStatus"))%>
+            <% If rs("diAudiStatus") <> 1 Then %>
+            （<%=ShowAudiName(rs("diName"),rs("diAudiNote"))%>）
+            <% End If %></td>
+          <td><%=GetAudiResult(rs("fiAudiStatus"))%>
+            <% If rs("fiAudiStatus") <> 1 Then %>
+            （<%=ShowAudiName(rs("fiName"),rs("fiAudiNote"))%>）
+            <% End If %></td>
+          <td><%=GetAudiResult(rs("baAudiStatus1"))%><% If rs("baAudiStatus1") <> 1 Then %>（<%=rs("baName1")%>) <%End If%></td> 
+          <!--<td><%'=ShowCaAudiByTransactStatus(p_transactStatus)%>
+            <%' If p_transactStatus = 1 Then %>
+            （<%'=p_transactorTime%>）
+            <%' End If %></td>-->
+        </tr>
+        <%
+				rs.MoveNext
+				If (rs.Bof Or rs.Eof) Then Exit For
+			Next
+		End If
+		Call DestoryRs(rs)
+		%>
+        <tr>
+        	<td colspan="9">&nbsp;</td>
+        	<td>小计：</td>
+            <td style="text-align:right">￥<strong><%=GetMoney(sumCostMoney)%></strong></td>
+            <td style="text-align:right">￥<label id="sumTxtApproMoney"><strong><%=GetMoney(sumApprovePrice)%></strong></label></td>
+            <td class="font_red" style="text-align:right"></td>
+            <td colspan="8">&nbsp;</td>
+        </tr>
+      </table>
+      
+      <%If p_isborrow = 0 and approvalRole = "fi" and deductBorrowMoney <> 0 Then%>
+      <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tabStyle18">
+        <tr>
+          <th colspan="20">已关联的借款冲抵信息</th>
+        </tr>
+        <tr>
+          <th width="2%">序号</th>
+          <th width="6%">单据号</th>
+          <th width="4%">约款类别</th>
+          <th width="7%">经办人</th>
+          <th width="8%">经办部门</th>
+          <th width="8%">费用部门</th>
+          <th width="8%">费用人员</th>
+          <th width="10%">费用类别</th>
+          <th width="10%">费用科目</th>
+          <th width="6%">冲抵借款</th>
+          <th>备注</th>
+          <th width="4%">冲抵对象</th>
+          <th width="6%">经理审核</th>
+          <th width="6%">财务审核</th>
+        </tr>
+        <%
+        strSql = " select bcd.bcdId,bcd.yearValue,bcd.monthValue,bcd.costDeptId,bcd.costNote,bcd.diAudiStatus,bcd.fiAudiStatus,bcd.diName,bcd.diAudiNote,bcd.fiName,bcd.fiAudiNote, "&_
+			 " bc.billNo,bc.borrowBillNo,bc.isborrow,bc.transactorCode,bc.creatorName,bc.deptName,bc.transactorDeptName,bc.transactorName,bcd.itemName,bcd.categoryName, "&_ 
+             " bin.pbId,bin.deductBorrowMoney,bin.addStatus "&_
+             " from fi_paymentBorrowInfo bin with(nolock) "&_
+             " left join fi_businessCostDetail bcd with(nolock) on bcd.bcdId = bin.bcdIdBorrow" &_
+             " left join fi_businessCost bc with(nolock) on bcd.bcId=bc.bcId "&_
+             " where bin.bcIdPayment = " & p_bcId
+        If Not GetRs(rs, strSql) Then
+            Call NoDataTr()
+        Else
+            For row = 1 To rs.RecordCount
+            sumDeductBorrowMoney = sumDeductBorrowMoney+rs("deductBorrowMoney")
+        %>
+    
+        <tr>
+          <td><%=row%></td>
+          <td><%=rs("billNo")%></td>
+          <td style="text-align:center;"><%=ShowIsBorrow(rs("isborrow"))%></td>
+          <td><%=rs("transactorName")%>(<%=rs("transactorCode")%>)</td>
+          <td><%=rs("transactorDeptName")%></td>
+          <td><%=GetDeptNameById(rs("costDeptId"))%></td>
+          <td><%=GetCostNameByBcdId(rs("bcdId"))%></td>
+          <td><%=rs("categoryName")%></td>
+          <td><%=rs("itemName")%></td>
+          <td style="text-align:right"><%=GetMoney(rs("deductBorrowMoney"))%></td>
+          <td title="<%=rs("costNote")%>"><%=ShowCostNote(rs("costNote"))%></td>
+          <td><%=GetPaymentBorrowStatus(rs("addStatus"))%></td>
+          <td><%=GetAudiResult(rs("diAudiStatus"))%>
+            <% If rs("diAudiStatus") <> 1 Then %>
+            （<%=ShowAudiName(rs("diName"),rs("diAudiNote"))%>）
+            <% End If %>
+          </td>
+          <td><%=GetAudiResult(rs("fiAudiStatus"))%>
+            <% If rs("fiAudiStatus") <> 1 Then %>
+            （<%=ShowAudiName(rs("fiName"),rs("fiAudiNote"))%>）
+            <% End If %>
+          </td>
+        </tr>
+        <%
+                rs.MoveNext
+                If (rs.Bof Or rs.Eof) Then Exit For
+            Next
+        End If
+        Call DestoryRs(rs)
+        %>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>小计：</td>
+            <td class="font_bold" style="text-align:right">￥<%=GetMoney(sumDeductBorrowMoney)%></td>
+            <td colspan="5">&nbsp;</td>
+        </tr>
+      </table>
+      <%End If%>
+      <input type="hidden" id="hBcId" name="hBcId" value="<%=p_bcId%>" />
+      <input type="hidden" name="approvalRole" id="approvalRole" value="<%=approvalRole%>" />
+      <input type="hidden" name="borrowSumMoney" id="borrowSumMoney" value="<%=deductBorrowMoney%>" />
+      <input type="hidden" name="_sumTxtApproMoney" id="_sumTxtApproMoney" value="<%=sumCostMoney%>" />
+      <input type="hidden" name="sumDeductBorrowMoney" id="sumDeductBorrowMoney" value="<%=sumDeductBorrowMoney%>" size="10"/>
+      <input type="hidden" name="sumNum" id="sumNum" value="<%=sumNum%>" size="10"/>
+      <input type="hidden" name="sltSumTxtMoney" id="sltSumTxtMoney" value="0" size="10"/>
+      <input type="hidden" name="strBcdIds" id="strBcdIds" value="<%=strBcdIds%>" size="10"/>
+      <div class="paddingAll10px" style="text-align:left"> <strong>审核级别</strong>： 
+        经理审核 &gt;&gt; 
+        总监审核 &gt;&gt; 
+        财务审核 &gt;&gt; 
+        副总审核 </br>
+        <strong>图标说明</strong>： <img src="/images/icons/03/exclamation.gif" border="0" align="absmiddle" hspace="3" />表示<strong>未审核</strong>状态； <img src="/images/icons/01/tick.png" border="0" align="absmiddle" hspace="3" />表示<strong>审核通过</strong>状态； <img src="/images/icons/02/cross.gif" border="0" align="absmiddle" hspace="3" />表示<strong>审核不通过</strong>状态； </br>
+        <%'If approvalRole = "fi" Then%>
+        <strong>审批金额说明</strong>：
+        1 先勾选对应的复选框之后，审批金额列项就可以填写审批金额数。2.填写完毕之后，点击通过按钮就审批金额成功并且通过了审核。 </div>
+        <%'End If%></td>
+  </tr>
+</table>
+</form>

@@ -1,0 +1,43 @@
+	
+-------------------js获取下拉框的节点及节点下拉框选中值
+var oneName = $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];		//获取年下拉节点
+		alert(oneName[oneName.selectedIndex].value);				//下拉框的值
+
+
+----------------------html
+<tr>
+                	<td><%=yearValueList%></td>
+                    <td><%=CreateSltApplyMonth("applyMonth",month(now()),"","")%></td>
+					<td height="31"><%=categoryNameList%></td>
+					<td id="_itemId"><select name="itemCode"><option value="">请选择</option></select><!--<%'=itemNameList%>--></td>
+                    <td id="_monthDetailInfo"><select name="monthDetial"><option value="">请选择</option></select></td>
+					<td id="_budgetPrice" style="text-align:right"></td>
+					<td id="_budgetPrice_itemBalance" style="text-align:right" class="font_red"></td>
+					<td id="_itemBalance" style="text-align:right" class="font_green"></td>
+					<td><input type="text" name="costPrice" id="costPrice" onkeyup="BtnEvent.countSumPrice(this);" size="8"></td>
+					<td><%=CreateSltByBoolean("isBillOrNo","0","","","")%>
+					</td>
+					<td><input type="text" name="billDate" onclick="return showCalendarByEl(this);"  readonly="readonly" class="inputTextDateBg" size="10" /><label>&nbsp;</label></td>
+					<td><textarea name="costNote" rows="1" style="width:95%;" onfocus="this.rows=3;" onblur="this.rows=1;"></textarea></td>
+					<td>
+					<img src="/images/icons/02/cross.gif" border="0" class="cur_hand" onclick="Row.deleteRow(this.parentNode.parentNode);" /></td>
+				</tr>
+
+
+----------------------vb
+<%
+Dim row, strSql, strSqlProgramme, rs, iPage, iPageSize, pCount, itemCount, otherKeys, pageStyle
+		 
+strSql = " select distinct categoryName,categoryName from v_fiBudgetOrderYearApplyList v with(nolock) "&_ 
+         " where deptId = (select deptId from fi_empList where empId = " & Session("uid") &  " and programmeId = v.programmeId)" 
+
+'strSql = " select itemName,itemName from ts_items where tmId = 8 and pId = 0"
+Dim categoryNameList : categoryNameList = CreateSelectPlus(conn, strSql, "", "categoryName", "选择科目类别", "", "onchange", "BtnEvent.getItemNameList(this)")
+Dim yearValueList	 : yearValueList	= CreateSelectPlus(conn, "select distinct yearValue,yearValue from bc_programme with(nolock) where 1=1", "yearValue", "yearValue", "", year(now()), "", "")
+
+'strSqlCustomer = "select distinct itemCode,itemName from v_fiBudgetOrderYearApplyList where prAudiStatus = 1 and categoryName = '" & CheckStr(Request.QueryString("categoryName")) & "' and empId = " & Session("uid")
+'CreateCheckBoxList(ByRef con,ByVal strSql,ByVal elementName,ByVal selectedItems,ByVal exceptItems,ByVal isCreateList,ByVal eventType,ByVal eventMethod)
+'strSqlProgramme = " select programmeId,pName from bc_programme "
+'Dim programmeList : programmeList = CreateSelectPlus(conn, strSqlProgramme, "", "programmeId", "选择预算方案", "", "onchange", "BtnEvent.getCategoryName(this)")
+
+%>

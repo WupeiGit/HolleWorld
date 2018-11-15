@@ -1,0 +1,40 @@
+杨蓓蓓 8963(杨蓓蓓) 14:15:56
+var message = new Array();
+var url = '/inc/action/fiCostFactAction.asp?action=isSameOnePayCode&tcfIds='+?;
+new Ajax.Request(url,{
+onComplete: function(t){
+	message = t.responseText;
+	if(message!=0){			
+
+	}else{
+
+	}
+}
+});
+
+flightMileageList.asp?action=fltMileageDelete&fmId=<%=Trim(rsFltMlg("fmId"))%>&fltId=<%=flightId%>&fltNo=<%=Trim(rsFltMlg("flightNo"))%>
+
+	//Ajax应用-
+	checkCateCode : function(){
+		var cateCode 	=	$("cateCode").value;
+		var url = 'commodityCategoryUpdate.asp?action=sltByCateCode&cateCode='+cateCode
+			new Ajax.Request(url,{
+				onCreate : function(){
+					$('msg').update('');
+					$('msgFlase').update('');
+				},
+				onComplete : function(t){
+					if(t.responseText == 0){
+						$('msg').update('√');
+						$('msgFlase').update('');
+						$('subUpdate').disabled = false;
+					}else if(t.responseText == 1){
+						$('msg').update('');
+						$('msgFlase').update('类目代码不能重复！');
+						$('cateCode').focus();
+						$('cateCode').select();
+						$('subUpdate').disabled = true;
+					}
+				}
+			});
+	}

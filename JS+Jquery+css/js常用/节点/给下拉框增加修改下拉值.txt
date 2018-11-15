@@ -1,0 +1,42 @@
+---------js	
+getSltEmpNameListNum : function(deptIds,num){
+		var url = 'budgetDeptUpdate.asp?action=loadEmpList&deptIds='+ deptIds;
+		var el = $('empNameList'+num+'');
+		var n = new Nodes();
+		$('_sltEmpNameList'+num+'').innerHTML = '';
+	
+		new Ajax.Request(url,{
+			onComplete: function(t){
+					alert(t.responseText);
+				$('empNameList'+num+'').style.display = "block";
+				$('sltEmpNameList'+num+'').style.display = "none";
+				//$('_sltEmpNameList'+num+'').innerHTML = "";
+				$('empNameList'+num+'').enable();
+				n.removeAllChilds(el);
+				el.add(new Option('-=选择员工=-'));
+				el.add(new Option(t.responseText));
+				el.appendChild(n.updateSelectOptions(t.responseText));
+				alert(el.innerHTML);
+			}
+		});
+	},
+
+-------html
+ <tr>
+					<td> 　3级管理员 *</td>
+					<td><div class="floatL">
+							<%=GetCompDept(conn,"", "sltCompDept", "-=请先选择指定部门=-", GetDeptIdByEmpId(pg_btManager), "onChange", "budget.getSltEmpNameListNum(this[this.selectedIndex].value,3)", "HTML")%>
+							<label id="_sltEmpNameList3"><%=CreateSltEmpName("sltEmpNameList3", "-=选择员工=-", pg_btManager, GetDeptIdByEmpId(pg_btManager), "onChange", "budget.toGetSltEmpNameNum(3);budget.toGetSltEmpOptionValues(3);")%></label>
+						</div>
+						<div>
+							<div class="floatL">
+								<select name="empNameList3" id="empNameList3" style="width:100px; display:none;" onchange="budget.getSltEmpNameNum(3);budget.getSltEmpOptionValuesNum(3);">
+									<option value="">-=选择员工=-</option>
+								</select>
+							</div>
+							<div>
+								　<label id="msgDept3"></label><label id="msgName3"></label>
+							</div>
+						</div>
+					</td>
+				</tr>

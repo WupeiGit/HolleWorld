@@ -1,0 +1,117 @@
+jQuery.param()函数用于将一个JS数组或纯粹的对象序列化为字符串值，以便用于URL查询字符串或AJAX请求。
+
+如果传入的不是数组或"纯粹的对象"，则返回空字符串("")；如果传入的是null、undefined等无法访问属性的值，则直接报错。
+
+所谓"纯粹的对象"，就是通过{}或new Object()自行创建的对象。JS内置的Boolean、Number、String、Date、RegExp、Function、Window等类型的对象都不算是"纯粹的对象"。
+
+返回的字符串已经过URL编码处理(采用的字符集为UTF-8)。
+
+该函数属于全局的jQuery对象。
+
+语法
+
+jQuery 1.2 新增该静态函数。
+
+jQuery.param( obj [, traditional ] )
+参数
+
+参数	描述
+obj	String类型需要被序列化的JS对象。
+traditional	Boolean类型指示是否执行一个传统的"浅层"序列化。
+jQuery 1.4 新增支持：jQuery.param()支持参数traditional。
+
+从jQuery 1.3开始，如果属性值是一个函数，则使用该函数的返回值来作为真正的值，而不是将函数当作一个字符串值。
+
+从jQuery 1.4开始，jQuery.param()将递归地序列化深层次的对象(数组始终不会递归处理)，以适应诸如PHP、Ruby on Rails等现代脚本语言或框架的需要。参数traditional的默认值等于全局设置jQuery.ajaxSettings.traditional的值。因此，你可以通过如下全局设置禁用该功能：
+
+jQuery.ajaxSettings.traditional = true;
+从jQuery 1.8开始，jQuery.param()不再使用jQuery.ajaxSettings.traditional作为参数traditional的默认值，而是采用默认值false。为了最好的跨版本兼容性，请在调用该函数时，明确指定第二个参数traditional，而不要使用默认值。
+
+如果参数obj是一个数组，那么它的每个元素都必须是一个包含name属性和value属性的对象(value属性可以没有，默认其值为undefined)。例如：
+
+// 每个元素必须是包含name和value属性的对象(也可以有其他属性，但不会被处理)
+// jQuery会将name属性值用作参数名，value属性值用做参数值。
+[
+ { name: "name", value: "CodePlayer" },
+ { name: "age", value: 18 },
+ { name: "job", value: "Developer", company: "家里蹲" }
+]
+由于某些框架解析序列化的数组的能力有限，当参数obj是一个嵌套了其他数组或对象的数组时，开发人员应当尽量小心谨慎。
+由于没有一个用于参数字符串的通用规范，使用该方法来编码一些复杂的数据结果可能无法在跨所有语言支持中理想地工作。在编码复杂的数据时，你可以选择使用JSON格式来作为替代。
+返回值
+
+jQuery.param()函数的返回值为String类型，返回解析指定的数组或对象的编码字符串。
+
+示例&说明
+
+以下是与jQuery.param()函数相关的jQuery示例代码，以演示jQuery.param()函数的具体用法：运行代码(以下部分代码请自行复制到演示页面运行)
+
+var v1 = $.param( true ); // ""
+var v2 = $.param( 100 ); // ""
+var v3 = $.param( 12.34 ); // ""
+var v4 = $.param( "" ); // ""
+var v5 = $.param( function(){ return 18; } ); // ""
+var v6 = $.param( /\d+/ ); // ""
+var v7 = $.param( new Date() ); // ""
+var v8 = $.param( null ); // 报错
+var v9 = $.param( undefined ); // 报错
+
+// 字符串将被看作一个字符数组
+var v10 = $.param( "name" ); // "0=n&1=a&2=m&3=e"
+
+
+var v11 = $.param( { name:"CodePlayer", age:18 } ); // "name=CodePlayer&age=18"
+
+var array = [
+    { name: "name", value: "张三" },
+    { name: "age", value: 18, extra: "忽略该属性" },
+    { name: "grade" }, // 没有value属性，则value值为undefined，将被转为空字符串""
+    { name: "orderId", value: 2 },
+    { name: "orderId", value: 3 },
+];
+var v12 = $.param( array ); // "name=%E5%BC%A0%E4%B8%89&age=18&grade=&orderId=2&orderId=3"
+
+
+// jQuery将数组的每个元素视作对象，并调用其name和value属性
+// 由于这些元素没有name属性，所以为undefined，并被转为字符串"undefined"
+// 由于这些元素没有value属性，所以为undefined，并被转为空字符串""
+var v13 = $.param( [ "name", 2, 3 ] ); // "undefined=&undefined=&undefined="
+
+
+var v14 = $.param( { 
+    name:"Jim",
+    age: function(){ return 18; }
+} );
+// 1.3之前返回："name=Jim&age=function+()%7B+return+18%3B+%7D"
+// 1.3+返回："name=Jim&age=18"
+下面，我们再来看一些较为复杂的嵌套数据结构。请注意参数traditional的值，如果为false，它将递归处理包含嵌套内容的深层对象；如果为true，则对属性值或元素直接浅层处理，不进行递归处理。
+
+// 返回的字符串已经过URL编码，原始字符串为："name=CodePlayer&age=18&uid[]=2&uid[]=3&uid[]=5"
+var complexV = $.param( obj, false ); // "name=CodePlayer&age=18&uid%5B%5D=2&uid%5B%5D=3&uid%5B%5D=5"
+
+// 传统的浅层序列化
+var simpleV = $.param( obj, true ); // "name=CodePlayer&age=18&uid=2&uid=3&uid=5"
+
+
+obj = {
+    name: "Jim",
+    options: { age: 18, global: true, uid: [1, 2, 3]  }
+};
+// 原始字符串为："name=Jim&options[age]=18&options[global]=true&options[uid][]=1&options[uid][]=2&options[uid][]=3"
+complexV = $.param( obj, false ); // "name=Jim&options%5Bage%5D=18&options%5Bglobal%5D=true&options%5Buid%5D%5B%5D=1&options%5Buid%5D%5B%5D=2&options%5Buid%5D%5B%5D=3"
+
+// 原始字符串为："name=Jim&options=[object Object]"
+simpleV = $.param( obj, true ); // "name=Jim&options=%5Bobject+Object%5D"
+
+
+obj = [
+       { name: "names", value: { first:"Jim", second:"W", last:"Green" } },
+       { name: "uid", value: [ { name: "a", value: 1}, "James" ] }
+];
+/* 数组始终不会递归处理 */
+
+// 原始字符串为："names=[object Object]&uid=[object Object],James"
+complexV = $.param( obj, false ); // "names=%5Bobject+Object%5D&uid=%5Bobject+Object%5D%2CJames"
+
+// 原始字符串为："names=[object Object]&uid=[object Object],James"
+simpleV = $.param( obj, true ); // "names=%5Bobject+Object%5D&uid=%5Bobject+Object%5D%2CJames"

@@ -1,0 +1,73 @@
+用js怎样获得下拉框的值？ 
+检举|2011-03-31 22:56 qin_qingyu | 分类：JavaScript | 浏览7422次 
+这是我的html中的select部分：       <td align="right">在职时间：</td>        <td>         <select name="gstartyear[]">         $yearhtml         </select> 年         <select name="gstartmonth[]">         $monthhtml         </select> 月 ~          <select name="gendyear[]">         <option value="">现在</option>         $yearhtml         </select> 年         <select name="gendmonth[]" onblur="judgeDate()">         <option value=""></option>         $monthhtml         </select>月          <span id="time"> </span></td>      </tr>我的在javascript中应该怎么写函数才能获得所选年和月的值?var date1 = document.getElementById("year");   var date2 = document.getElementById("year1");我这样写输出date1和date2为什么都是没有对象？ 
+
+document.getElementById("gstartyear")获取的仅仅是下拉列表这个对象var objYear=document.getElementById("gstartyear");var theYear=objYear.options[objYear.selectedIndex].value;这样才是获取的这个下拉列表中选中的项的值。另外需要为下拉列表设置id属性且id值不需要[],例如<select name="gstartyear" id="gstartyear">         $yearhtml         </select>
+
+select有个name属性,它放在form里的时候可以直接引用<form name="f1"><select name="gstartyear">         $yearhtml         </select></form>比如这个select,要引用它就用  document.f1.gstartyear它的值就是document.f1.gstartyear.value如果不放在form里,就用document.getElementsByName("gstartyear")[0].value注意getElementsByName这个方法获取到的是一个数组,同getElementsByTagName是一样的
+
+
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 
+
+章提供一款js 获取文本框的值，在js中要获取文本框值就利用document.getelementbyid().value哦，在jquery中就利用$().val();就ko了。
+
+document.getelementbyid("文本框名").value 实例
+
+<form name="form1" method="post" action="manager.do?action=login">
+<tr><td >会员编号：</td>
+<td ><input name="memberno" type="text" id="memberno" size="21" ></td>
+
+<td ><input name="submit" type="submit" value="确定" onclick="return check(form1)"></tr>
+</form>
+js中的代码：
+
+<script>
+function check(form){
+  var str = form.memberno.value;
+      if( str == "" )
+      {
+           alert('输入用户名')
+      }
+}
+</script>
+更多详细内容请查看：http://www.111cn.net/wy/js-ajax/35694.htm
+
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 
+
+jquery radio取值，checkbox取值，select取值，radio选中，checkbox选中，select选中，及其相关 
+获取一组radio被选中项的值 
+var item = $('input[@name=items][@checked]').val(); 
+获取select被选中项的文本 
+var item = $("select[@name=items] option[@selected]").text(); 
+select下拉框的第二个元素为当前选中值 
+$('#select_id')[0].selectedIndex = 1; 
+radio单选组的第二个元素为当前选中值 
+$('input[@name=items]').get(1).checked = true; 
+
+获取值： 
+
+文本框，文本区域：$("#txt").attr("value")； 
+多选框checkbox：$("#checkbox_id").attr("value")； 
+单选组radio：   $("input[@type=radio][@checked]").val(); 
+下拉框select： $('#sel').val(); 
+
+控制表单元素： 
+文本框，文本区域：$("#txt").attr("value",'');//清空内容 
+                 $("#txt").attr("value",'11');//填充内容 
+
+多选框checkbox： $("#chk1").attr("checked",'');//不打勾 
+                 $("#chk2").attr("checked",true);//打勾 
+                 if($("#chk1").attr('checked')==undefined) //判断是否已经打勾 
+
+单选组radio：    $("input[@type=radio]").attr("checked",'2');//设置value=2的项目为当前选中项 
+下拉框select：   $("#sel").attr("value",'-sel3');//设置value=-sel3的项目为当前选中项 
+                $("<option value='1'>1111</option><option value='2'>2222</option>").appendTo("#sel")//添加下拉框的option 
+                $("#sel").empty()；//清空下拉框 
+★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★★ 
+
+
+http://blog.csdn.net/cutesource 
+
+http://blog.csdn.net/pp156 
+
+http://android.group.iteye.com/group/topic/21056 

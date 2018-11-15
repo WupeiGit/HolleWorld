@@ -1,0 +1,5 @@
+var b=obj.rows.item(2).cells(2).children(0).value;
+或var b=obj.rows.item(2).cells(2).childNodes(0).value;
+或var b=obj.rows.item(2).cells(2).getElementsByTagName('input')(0).value;
+或var b=obj.rows[2].cells[2].children[0].value; 
+或var b=obj.rows[2].cells[2].children[0].getAttribute('value');

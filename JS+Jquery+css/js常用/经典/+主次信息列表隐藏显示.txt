@@ -1,0 +1,601 @@
+--------------------------------------------------------------------------asp页面（commodityCategoryList.asp）
+
+<!--#include virtual="/inc/action/commodityCategoryAction.asp" -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>商品类目管理</title>
+<link href="/style/common.css" rel="stylesheet" type="text/css" />
+<link href="/style/admin.css" rel="stylesheet" type="text/css" />
+<link href="/style/calendar.css" type="text/css" rel="stylesheet" />
+<style type="text/css">
+.headerStyle1 { 
+	width:110px; 
+	line-height:18px; 
+	border:1px solid #CCC; 
+	background-color:#5CACEE; 
+	text-align:center; 
+	margin-left:10px; 
+	margin-bottom:1px;
+	padding:1px; 
+	color:#FFF;
+	font:bold; 
+}
+</style>
+<script type="text/javascript" src="/style/js/calendar.js"></script>
+<script type="text/javascript" src="/style/js/calendar-setup.js"></script>
+<script type="text/javascript" src="/style/js/calendar-zh.js"></script>
+<script type="text/javascript" src="/style/js/prototype.js"></script>
+<script type="text/javascript" src="/style/js/common.js"></script>
+<script type="text/javascript" src="/style/js/ajax.js"></script>
+<script type="text/javascript" src="/style/js/alt.js"></script>
+<script type="text/javascript" src="/style/js/commodityCategory.js"></script>
+</head>
+<%
+Dim row, iPage, iPageSize, pCount, itemCount, otherKeys, pageStyle
+Dim rs, rs2, rs3, strSql, strSql1, strSql2, strSql3, row1, row2
+	strSql = "select ccId, cateCode, title, note from ad_commodityCategory with(noLock) where  1=1"
+	
+	strSql1 = strSql&" and dataLength(cateCode) = 4"
+
+	strSql2 = strSql&" and dataLength(cateCode) = 7 "
+	
+	strSql3 = strSql&" and dataLength(cateCode) = 10 "
+	
+
+%>
+
+<body>
+<table border="0" cellpadding="0" cellspacing="1" class="tabStyle6" style="width:100%">
+	<tr>
+		<th>审核办公用品管理</th>
+	</tr>
+    <tr>
+        <td style="padding:10px">
+			<form name="frmList" id="frmList" method="post">
+			<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle16">
+				<tr> 	
+					<th width="2%" height="26">&nbsp;</th>
+					<th width="12%">类目代码</th>
+					<th width="32%">类目名称</th>
+					<th>备注</th>
+					<th width="10%">操作</th>
+				</tr>
+				<%
+				If Not GetRs(rs, strSql1) Then
+					Call NoDataTr()
+				Else
+					Call SetPageInfo(rs, iPage, iPageSize, pCount, itemCount)
+					For row =1 To iPageSize
+				%>
+				
+				<tr onclick="BtnEvent.selectedLine(this);" class="cur_hand">
+					<td style="text-align:center;">
+					<% If GetRs(rs2,strSql2&" and cateCode like '"& rs("cateCode") &"%'") Then %>
+						<div id="closeDetailList<%=row%>" style="display:block"><img src="/images/tree/02/plusbox.gif" border="0" align="absmiddle" hspace="3" onclick="BtnEvent.openDetails('detailInfo<%=row%>','closeDetailList<%=row%>','openDetailList<%=row%>');"  /></div>
+						<div id="openDetailList<%=row%>" style="display:none"><img src="/images/tree/02/minusbox.gif" border="0" align="absmiddle" hspace="3" onclick="BtnEvent.closeDetails('detailInfo<%=row%>','closeDetailList<%=row%>','openDetailList<%=row%>');"  /></div>
+					<% Else %>
+						<div class="font_gray">无</div>	
+					<% End If %>
+					</td>
+					
+					<% If GetRs(rs2,strSql2&" and cateCode like '"& rs("cateCode") &"%'") Then %>
+					<td onclick="BtnEvent.toShowDetailStyle('detailInfo<%=row%>','closeDetailList<%=row%>','openDetailList<%=row%>');"><%=rs("cateCode")%></td>
+					<td onclick="BtnEvent.toShowDetailStyle('detailInfo<%=row%>','closeDetailList<%=row%>','openDetailList<%=row%>');"><%=rs("title")%></td>
+					<td onclick="BtnEvent.toShowDetailStyle('detailInfo<%=row%>','closeDetailList<%=row%>','openDetailList<%=row%>');"><%=rs("note")%></td>
+					<% Else %>
+					<td><%=rs("cateCode")%></td>
+					<td><%=rs("title")%></td>
+					<td><%=rs("note")%></td>
+					<% End If %>
+					<td>
+						<%If SltCateInfoIsUsed(Trim(rs("cateCode"))) Then%>
+							<input type="button" class="btn_bg_style04_50" onclick="CmdtyCategory.toCmdtyCategoryUpdate(<%=Trim(rs("ccId"))%>,'<%=Trim(rs("cateCode"))%>')" value="修 改" />
+							<input type="button" class="btn_bg_style01_50" onclick="CmdtyCategory.toCmdtyCategoryDel(<%=Trim(rs("ccId"))%>)" value="删 除" />
+                        <%Else %>
+                        	<input type="button" class="btn_bg_style04_50" value="修 改" disabled="disabled" />
+							<input type="button" class="btn_bg_style01_50" value="删 除" disabled="disabled" />
+						<%End If%>
+					</td>
+				</tr>
+				<!--二级-->
+				<tr id="detailInfo<%=row%>" style="display:none">
+					<td colspan="3" style="text-align:center; vertical-align:top;">
+                        <div style="height:280px;">
+                        <table border="0" cellpadding="0" cellspacing="0" class="tabStyle16" style="width:98%;">
+                            <tr class="font_blueDeep">
+                                <td width="15%">类目代码</td>
+                                <td width="35%">类目名称</td>
+                                <td width="45%" >备注</td>
+                                <td>操作</td>
+                            </tr>
+                            <%
+                            If GetRs(rs2,strSql2 &" and cateCode like '"& rs("cateCode") &"%'") Then
+								Dim pg_countNum	: pg_countNum	= rs2.recordCount 
+                                For row1 = 1 To rs2.recordCount 
+                            %>
+                            <tr bgcolor="#F8F8F8" onMouseOver="this.className='userInfoListOver'" onMouseOut="this.className='font_grayDeep';this.bgColor='#F8F8F8'" class="font_grayDeep" onclick="CmdtyCategory.toTabInfoManage(<%=row1%>,'<%=rs2("title")%>');">
+                                <td><%=rs2("cateCode")%></td>
+                                <td><%=rs2("title")%></td>
+                                <td><%=rs2("note")%></td>
+                                <td>
+                                    <%If SltCateInfoIsUsed(Trim(rs2("cateCode"))) Then%>
+                                        <a href="javaScript:CmdtyCategory.toCmdtyCategoryUpdate(<%=Trim(rs2("ccId"))%>,'<%=Trim(rs2("cateCode"))%>');">修改</a>
+                                        <a href="javaScript:CmdtyCategory.toCmdtyCategoryDel(<%=Trim(rs2("ccId"))%>);">删除</a>
+                                    <%Else%>
+                                        <span class="font_grayDeep">修改</span>
+                                        <span class="font_grayDeep">删除</span>
+                                    <%End If%>
+                                </td>
+                            </tr>
+                            <%
+                                    rs2.MoveNext
+                                    If (rs2.Bof Or rs2.Eof) Then Exit For
+                                Next
+                            End If
+                            %>			
+                        </table>
+                        <input type="hidden" name="countNum" id="countNum" value="<%=pg_countNum%>" />
+                        </div>
+					</td>
+					
+					<td colspan="5">
+                    	<div class="headerStyle1"><span id="selectedCateName"><strong>测试</strong></span></div>
+                        <div style="height:260px;border:2px solid #F5F5F5;">
+						<!--三级-->
+						<%
+						If GetRs(rs2,strSql2 &" and cateCode like '"& rs("cateCode") &"%'") Then
+							For row1 = 1 To rs2.recordCount 
+						%>
+						<table border="0" cellpadding="0" cellspacing="0" class="tabStyle16" style="width:100%; display:none;" id="tabShow<%=row1%>" >
+							<tr class="font_blueDeep">
+								<td width="7%" style="text-align:center;">序号</td>
+								<td width="13%">类目代码</td>
+								<td width="35%">类目名称</td>
+								<td width="40%" >备注</td>
+								<td>操作</td>
+							</tr>
+							<%
+							If GetRs(rs3,strSql3 &" and cateCode like '"& rs2("cateCode") &"%' ") Then
+								For row2 = 1 To rs3.recordCount 
+							%>
+							<tr class="font_grayDeep">
+								<td style="text-align:center;"><%=row2%></td>
+								<td><%=rs3("cateCode")%></td>
+								<td><%=rs3("title")%></td>
+								<td><%=rs3("note")%></td>
+								<td>
+								<%If SltCateInfoIsUsed(Trim(rs3("cateCode"))) Then%>
+                               		<a href="javaScript:CmdtyCategory.toCmdtyCategoryUpdate(<%=Trim(rs3("ccId"))%>,'<%=Trim(rs3("cateCode"))%>');">修改</a>
+                                    <a href="javaScript:CmdtyCategory.toCmdtyCategoryDel(<%=Trim(rs3("ccId"))%>);">删除</a>
+								<%Else%>
+                                	<span class="font_grayDeep">修改</span>
+                                    <span class="font_grayDeep">删除</span>
+								<%End If%>
+								</td>
+							</tr>
+							<%
+									rs3.MoveNext
+									If (rs3.Bof Or rs3.Eof) Then Exit For
+								Next
+							End If
+							Call DestoryRs(rs3)
+							%>		
+						</table>
+						<%
+								rs2.MoveNext
+								If (rs2.Bof Or rs2.Eof) Then Exit For
+							Next
+						End If
+						Call DestoryRs(rs2)
+						%>
+                        </div>		
+					</td>
+				</tr>
+				
+				<%
+						rs.MoveNext
+						If (rs.Bof or rs.Eof) Then Exit For
+					Next
+				End If
+				Call DestoryRs(rs)
+				%>
+				<tr>
+					<td colspan="8">
+						<input type="button" name="btnCmdtyCateAdd" id="btnCmdtyCateAdd" class="btn_bg_style04_50" onclick="CmdtyCategory.toCmdtyCategoryAdd()" value="新 增" />
+					</td>
+				</tr>
+				<tr class="pageBar01">
+					<td colspan="20" style="text-align:right"><%=CreatePageInfo(iPage, iPageSize, pCount, itemCount, otherKeys, pageStyle)%></td>
+				</tr>
+			</table>
+			</form>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
+<%
+'搜索条件已经申请的部门
+Function GetSlctSearchDept(ByVal sltId, ByVal sltName, ByVal strSelectedItem)
+	 Dim strSql : strSql = "select di_id,di_name from ts_deptInfo where di_id in (select applyDeptId from ad_deptApplyGoods with(nolock) where 1=1 and applyDeptId <> null or applyDeptId <> '')"
+	GetSlctSearchDept = CreateSelect(conn, strSql, sltId, sltName,"----全部----",strSelectedItem,"","")
+End function
+%>
+<!--#include virtual="/conn/incConn.asp" -->
+
+
+
+
+-----------------------------------------------------------js页面（commodityCategory.js）
+var iCnt = 0;
+var saveNode;
+
+//文件一加载
+window.onload = function() //用window的onload事件，窗体加载完毕的时候
+{  
+ //do something
+	$('tabShow1').show();
+	$('selectedCateName').innerHTML = "默认";
+}
+
+
+var CmdtyCategory = {
+	//跳转到新增页
+	toCmdtyCategoryAdd : function(){
+		toUrl('commodityCategoryAdd.asp');
+	},
+		
+	//跳转到新增二级分类页
+	toCmdtyCategoryAdd2 : function(){
+		toUrl('commodityCategoryAdd2.asp');
+	},	
+	//跳转到新增三级分类页
+	toCmdtyCategoryAdd3 : function(){
+		toUrl('commodityCategoryAdd.asp');
+	},
+	
+	//跳转到删除操作的action
+	toCmdtyCategoryDel : function(objCcId){
+		if(window.confirm("您确定要删除此行吗？")){
+			toUrl('commodityCategoryList.asp?action=cmdtyCategoryDel&ccId='+objCcId);
+		}
+	},
+	
+	//跳转到修改页
+	toCmdtyCategoryUpdate : function(objCcId, objCode){
+		var codeLength = "";
+		if(objCode.length == 4){
+			codeLength = 1;	
+		}else if(objCode.length == 7){
+			codeLength = 2;
+		}else if(objCode.length == 10){
+			codeLength = 3;
+		}
+		toUrl('commodityCategoryUpdate.asp?ccId='+objCcId + '&cateCode='+ objCode + '&codeLength='+ codeLength);
+	},
+	
+	//获得用户选择的编码级别
+	getCodeType	: function(objCodeType){
+		if(objCodeType == '1'){
+			$("oneSpan").style.display="block";
+			$("twoSpan").style.display="none";
+			$("ThreeSpan").style.display="none";
+		}
+		if(objCodeType == '2'){
+			$("oneSpan").style.display="none";
+			$("twoSpan").style.display="block";
+			$("ThreeSpan").style.display="none";
+		}
+		if(objCodeType == '3'){
+			$("oneSpan").style.display="none";
+			$("twoSpan").style.display="none";
+			$("ThreeSpan").style.display="block";
+		}
+	},
+	//添加时---判断用输入的类目编号是否存在
+	checkCateCode : function(){
+		var cateCode 	=	$("cateCodeFirst1").value;
+		if(cateCode.blank()){
+			$('msg').update('');
+			$('msgFlase').update('该类目代码不能为空！');
+			$('cateCodeFirst1').focus();
+			$('subCate').disabled = true;
+		}else if((/[\u4e00-\u9fa5]+/).test(cateCode)){      
+			$('msgFlase').update('商品编码不能为汉字！');
+			$('cateCodeFirst1').value ="";
+		}else{
+			var url = 'commodityCategoryAdd.asp?action=checkCateCodeAddJs&cateCode='+cateCode
+			new Ajax.Request(url,{
+				onCreate : function(){
+					$('msg').update('');
+					$('msgFlase').update('');
+				},
+				onComplete : function(t){
+					if(t.responseText == 0){
+						$('msg').update('√');
+						$('msgFlase').update('');
+						$('subCate').disabled = false;
+					}else{
+						$('msg').update('');
+						$('msgFlase').update('该类目代码已经存在！');
+						$('cateCodeFirst1').focus();
+						$('subCate').disabled = true;
+					}
+				}
+			});
+		}
+	},
+	
+	//添加时---判断用输入的类目2级编号是否存在
+	checkCateCode2 : function(){
+		var cateCode1 	=	$("cateCodeFirst2").value;
+		var cateCode2	=	$("cateCodeSecond").value;
+		var cateCode3	=	cateCode1+cateCode2;
+		
+		if(cateCode2.blank()){
+			$('msg2').update('');
+			$('msgFlase2').update('该2级类目代码不能为空！');
+			$('cateCodeSecond').focus();
+			$('subCate').disabled = true;
+		}else if((/[\u4e00-\u9fa5]+/).test(cateCode2)){      
+			$('msgFlase2').update('商品编码不能为汉字！');
+			$('cateCodeSecond').value ="";
+		}else{
+			var url = 'commodityCategoryAdd.asp?action=checkCateCodeAddJs&cateCode='+cateCode3
+			new Ajax.Request(url,{
+				onCreate : function(){
+					$('msg2').update('');
+					$('msgFlase2').update('');
+				},
+				onComplete : function(t){
+					if(t.responseText == 0){
+						$('msg2').update('√');
+						$('msgFlase2').update('');
+						$('subCate').disabled = false;
+					}else{
+						$('msg2').update('');
+						$('msgFlase2').update('该2级类目代码已经存在！');
+						$('cateCodeSecond').focus();
+						$('subCate').disabled = true;
+					}
+				}
+			});
+		}
+	},
+	
+	//添加时---判断用输入的类目3级编号是否存在
+	checkCateCode3 : function(){
+		var cateCode1 	=	$("cateCodeOneTwo").value;
+		var cateCode2	=	$("cateCodeThird").value;
+		var cateCode3	=	cateCode1+cateCode2;
+		
+		if(cateCode2.blank()){
+			$('msg3').update('');
+			$('msgFlase3').update('该2级类目代码不能为空！');
+			$('cateCodeThird').focus();
+			$('subCate').disabled = true;
+		}else if((/[\u4e00-\u9fa5]+/).test(cateCode2)){      
+			$('msgFlase3').update('商品编码不能为汉字！');
+			$('cateCodeThird').value ="";
+		}else{
+			var url = 'commodityCategoryAdd.asp?action=checkCateCodeAddJs&cateCode='+cateCode3
+			new Ajax.Request(url,{
+				onCreate : function(){
+					$('msg3').update('');
+					$('msgFlase3').update('');
+				},
+				onComplete : function(t){
+					if(t.responseText == 0){
+						$('msg3').update('√');
+						$('msgFlase3').update('');
+						$('subCate').disabled = false;
+					}else{
+						$('msg3').update('');
+						$('msgFlase3').update('该2级类目代码已经存在！');
+						$('cateCodeThird').focus();
+						$('subCate').disabled = true;
+					}
+				}
+			});
+		}
+	},
+	
+	//修改--判断用输入的类目编号是否存在
+	checkCateCodeUpd : function(objAgoCateCode){
+		var cateCode 	=	$("cateCode").value;
+		var cateCodeLen =	cateCode.length;
+		if(cateCode == objAgoCateCode){
+			$('msg').update('');
+			$('msgFlase').update('');
+		}
+		else{
+			if(cateCodeLen == 4 || cateCodeLen == 7 || cateCodeLen == 10){
+				var url = 'commodityCategoryUpdate.asp?action=checkCateCodeUpd&cateCode='+cateCode+'&agoCode='+objAgoCateCode
+				new Ajax.Request(url,{
+					onCreate : function(){
+						$('msg').update('');
+						$('msgFlase').update('');
+					},
+					onComplete : function(t){
+						if(t.responseText == 'True'){
+							$('msg').update('√');
+							$('msgFlase').update('');
+							$('subCateUpdate').disabled = false;
+						}else{
+							$('msg').update('');
+							$('msgFlase').update('该类目编码已经存在！');
+							$('cateCode').focus();
+							$('cateCode').select();
+							$('subCateUpdate').disabled = true;
+						}
+					}
+				});
+			}else{
+				$('msg').update('');
+				$('msgFlase').update('');
+				$('msg').update('');
+				$('msgFlase').update('级别错误：正确级别【4位(1级)/7位(2级)/10位(3级)】');
+				$('cateCode').focus();
+				$('cateCode').select();
+				$('subCateUpdate').disabled = true;	
+			}
+		}
+	},
+	
+	//验证添加页
+	toCheckCategory : function(){
+		var cateType			=	$("sltCateCodeType");
+		var title				=	$("title");
+		if(!cateType.value.blank()){
+			if(cateType.value == '1'){
+				var cateCodeFirst1		=	$("cateCodeFirst1");
+				var codeFirstLen1		=	cateCodeFirst1.value.length;
+				if(cateCodeFirst1.value.blank()){
+					alert("请检查【类目编号】填写！"); 
+					cateCodeFirst1.focus();
+					return false;
+				}else if(isNaN(cateCodeFirst1.value) || codeFirstLen1<4){
+					alert("第一级的【类目代码】必须是4位的数字！"); 
+					cateCodeFirst1.focus();
+					return false;
+				}else if(title.value.blank()){
+					alert("请检查【类目名称】填写！"); 
+					title.focus();
+					return false;
+				}else{
+					return true;
+				}
+			}
+			if(cateType.value == '2'){
+				var cateCodeSecond		=	$("cateCodeSecond");
+				var codeSecondLen		=	cateCodeSecond.value.length;
+				var cateCodeFirst2		=	$("cateCodeFirst2");
+				if(cateCodeFirst2.value.blank()){
+					alert("请选择一级类目编码！"); 
+					cateCodeFirst2.focus();
+					return false;
+				}else if(cateCodeSecond.value.blank()){
+					alert("请检查二级的【类目编号】填写！"); 
+					cateCodeSecond.focus();
+					return false;
+				}else if(isNaN(cateCodeSecond.value) || codeSecondLen<3){
+					alert("第二级的【类目代码】必须是3位的数字！"); 
+					cateCodeSecond.focus();
+					return false;
+				}else if(title.value.blank()){
+					alert("请检查【类目名称】填写！"); 
+					title.focus();
+					return false;
+				}
+			}
+			if(cateType.value == '3'){
+				var cateCodeThird		=	$("cateCodeThird");
+				var codeThirdLen		=	cateCodeThird.value.length;
+				var cateCodeOneTwo		=	$("cateCodeOneTwo");
+				if(cateCodeOneTwo.value.blank()){
+					alert("请选择二级类目编码！"); 
+					cateCodeOneTwo.focus();
+					return false;
+				}else if(cateCodeThird.value.blank()){
+					alert("请检查三级的【类目编号】填写！"); 
+					cateCodeThird.focus();
+					return false;
+				}else if(isNaN(cateCodeThird.value) || codeThirdLen<3){
+					alert("第二级的【类目代码】必须是3位的数字！"); 
+					cateCodeThird.focus();
+					return false;
+				}else if(title.value.blank()){
+					alert("请检查【类目名称】填写！"); 
+					title.focus();
+					return false;
+				}
+			}
+		}else{
+			alert("请选择类目编码级别分类！"); 
+			cateType.focus();
+			return false;
+		}
+	},
+	//验证修改页
+	toCheckCategoryUpdate : function(){
+		var cateCode	=	$("cateCode");
+		var title		=	$("title");
+		var cateCodeLen =	cateCode.value.length;
+		if(cateCode.value.blank()){
+			alert("请检查【类目编号】填写！"); 
+			cateCode.focus();
+			return false;
+		}else if(isNaN(cateCode.value)){
+			alert("【类目代码】只能为数字类型！"); 
+			cateCode.focus();
+			return false;
+		}else if(!cateCodeLen ==4 ||  !cateCodeLen ==7 || !cateCodeLen ==10){
+			alert("【类目代码】只能为4位(1级)/7位(2级)/10位(3级)的数字！");
+			cateCode.focus();
+			return false;
+		}else if(title.value.blank()){
+			alert("请检查【类目名称】填写！"); 
+			title.focus();
+			return false;
+		}
+	},
+	
+	//（隐藏）显示三级目录
+	toTabInfoManage : function(objSltNum,objTitle){
+		var strNum = $('countNum');
+		
+		for(var i=1; i<= strNum.value; i++){
+			$('tabShow'+i).hide();	
+		}
+		
+		$('tabShow'+objSltNum).show();
+		
+		$('selectedCateName').innerHTML = objTitle;
+	}
+}
+
+//隐藏显示
+var BtnEvent = {
+	//显示详情
+	openDetails : function(detailInfoCode,closeDetailCode,openDetailCode){
+		$(detailInfoCode).style.display = "block";
+		$(openDetailCode).style.display = "block";
+		$(closeDetailCode).style.display = "none";
+	},
+	
+	//关闭详情
+	closeDetails : function(detailInfoCode,closeDetailCode,openDetailCode){
+		$(detailInfoCode).style.display = "none";
+		$(openDetailCode).style.display = "none";
+		$(closeDetailCode).style.display = "block";		
+	},
+	
+	//选中行时显示详情
+	toShowDetailStyle : function(detailInfoCode,closeDetailCode,openDetailCode){
+		if($(detailInfoCode).style.display=="none"){
+			BtnEvent.openDetails(detailInfoCode,closeDetailCode,openDetailCode);
+		}else{
+			BtnEvent.closeDetails(detailInfoCode,closeDetailCode,openDetailCode);
+		}
+	},	
+	
+	// 选中行
+	selectedLine : function(lineNode){
+		if(saveNode!=null) saveNode.className = '';
+		saveNode = lineNode;
+		lineNode.className = 'listSelectedS6';
+	}
+		
+}
+
+//单选选中整行(只是选中行的样式)
+function selectThisLine(obj){
+	if(this.pObj != undefined)
+	this.pObj.className = this.pObjStyle;
+	this.pObj = obj;
+	this.pObjStyle = obj.className;
+	obj.className = "listSelectedS6";
+}
+

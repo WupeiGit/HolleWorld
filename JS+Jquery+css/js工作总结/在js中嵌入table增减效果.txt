@@ -1,0 +1,274 @@
+var FlightMlg = {
+
+	//增加num个table
+	AddFltMlgNum : function(objNum, addNum){
+		
+		var strTab	='';
+		var tbNum	= $("addFltMlgNum");				//获取隐藏域对象
+		
+		tbNum.value = parseInt(tbNum.value)+objNum;		//获取隐藏域的值并自增
+
+		if(tbNum.value == 1){
+			$("btnCut").disabled = true;//禁用
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			$("btnAdd").disabled = false;//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			$("btnAdd").disabled = true;
+		}
+		
+		for(var i=1 ; i<=tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16"  style="margin-bottom:5px;">'
+				            +'<tr>'
+								+'<td width="10%" align="right" colspan="4">&nbsp;&nbsp; 第<span class="font_red"> '+i+' </span> 条</td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 航班号：</td>'
+								+'<td width="40%"><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第几天：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td align="right"><span class="font_red">*</span> 起点：</td>'
+								+'<td><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td align="right"><span class="font_red">*</span> 起飞时间：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+								+'<span id="showSTime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td align="right"><span class="font_red">*</span> 终点：</td>'
+								+'<td><input type="text" name="endPoint'+i+'" id="endPoint'+i+'" size="20"/></td>'
+								+'<td align="right"><span class="font_red">*</span> 达到时间：</td>'
+								+'<td><input type="text" name="leaveTime'+i+'" id="leaveTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+							    +'<span id="showETime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td align="right"><span class="font_red">*</span> 是否过夜：</td>'
+								+'<td colspan="3"><input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="1"/>是&nbsp;&nbsp; <input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="0"/>否</td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+            
+		}
+	 },
+
+	//减少num个table
+	CutFltMlgNum : function(objNum, addNum){
+		var strTab	='';
+		var tbNum	=$("addFltMlgNum");					//获取隐藏域对象
+		
+		tbNum.value=parseInt(tbNum.value) - 1;			//获取隐藏域的值并自增
+		if(tbNum.value == 1){
+		    $("btnAdd").disabled = false;				//启用
+			$("btnCut").disabled = true;				//禁用
+		}else if(tbNum.value  < addNum && tbNum.value  > 1){
+			$("btnAdd").disabled = false;				//启用
+			$("btnCut").disabled = false;
+		}else if(tbNum.value  == addNum){
+			$("btnAdd").disabled = true;
+		}
+		
+		
+		for(var i=1 ; i<=tbNum.value; i++){
+			strTab += '<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16"  style="margin-bottom:5px;">'
+				            +'<tr>'
+								+'<td width="10%" align="right" colspan="4">&nbsp;&nbsp; 第<span class="font_red"> '+i+' </span> 条</td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 航班号：</td>'
+								+'<td width="40%"><input type="text" name="flightNo'+i+'" id="flightNo'+i+'" size="20" value=""/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 第几天：</td>'
+								+'<td><input type="text" name="dayNum'+i+'" id="dayNum'+i+'" size="20"/></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起点：</td>'
+								+'<td width="40%"><input type="text" name="startPoint'+i+'" id="startPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 起飞时间：</td>'
+								+'<td><input type="text" name="startTime'+i+'" id="startTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+								+'<span id="showSTime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 终点：</td>'
+								+'<td width="40%"><input type="text" name="endPoint'+i+'" id="endPoint'+i+'" size="20"/></td>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 达到时间：</td>'
+								+'<td><input type="text" name="leaveTime'+i+'" id="leaveTime'+i+'" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>'
+							    +'<span id="showETime'+i+'">&nbsp;</span></td>'
+							+'</tr>'
+							+'<tr>'
+								+'<td width="10%" align="right"><span class="font_red">*</span> 是否过夜：</td>'
+								+'<td colspan="3"><input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="1"/>是&nbsp;&nbsp; <input type="radio" name="isNight'+i+'" id="isNight'+i+'" value="0"/>否</td>'
+							+'</tr>'
+						+'</table>'
+			$("showFmTab").innerHTML = strTab;
+		}
+	
+	},
+	 
+	 //检查航班分段的录入
+	 checkFltMlgAdd : function(){
+		var tdNum		= $('addFltMlgNum');
+		 
+		for(var i=1; i<=tdNum.value; i++){
+			
+ 			if($('flightNo'+i).value.blank()){
+				alert("请填写航班分段[航班编号"+i+"]！");
+				$('flightNo'+i).focus();
+				return false;
+			}else if($('dayNum'+i).value.blank()){
+				alert("请填写航班分段[第几天"+i+"]！");
+				$('dayNum'+i).focus();
+				return false;
+			}else if($('startPoint'+i).value.blank()){
+				alert("请选择航班[起点"+i+"]！");
+				$('startPoint'+i).focus();
+				return false;
+			}else if($('startTime'+i).value.blank()){
+				alert("请选择航班[起飞时间"+i+"]！");
+				$('startTime'+i).focus();
+				return false;
+			}else if($('endPoint'+i).value.blank()){
+				alert("请填写航班分段[终点"+i+"]！");
+				$('endPoint'+i).focus();
+				return false;
+			}else if($('leaveTime'+i).value.blank()){
+				alert("请填写航班分段[达到时间"+i+"]！");
+				$('leaveTime'+i).focus();
+				return false;
+			}else if((document.getElementsByName("isNight"+i)[0].checked == false) && (document.getElementsByName("isNight"+i)[1].checked == false)){
+				alert("请填写航班分段[是否过夜"+i+"]！");
+					return false;
+			}
+		}
+		
+	},
+	
+	//------------获取开始时间（精确到时分秒）
+	getMileageSTimes : function(){
+		var tdNum			= $('addFltMlgNum');
+		var strHours 		= '';
+		var strMinuns		= '';
+		var strSeconds		= '';
+        
+		for(var i=1; i<=tdNum.value; i++){
+			//-----------时
+			strHours += '<select name="sltSHour'+i+'" id="sltSHour'+i+'" onChange="alert(this.value);">'
+				for(var h=0; h<=23; h++){
+					if(h<10){
+						strHours += '<option value="0'+h+'">0'+h+'</option>'
+					}else{
+						strHours += '<option value="'+h+'">'+h+'</option>'
+					}
+				}
+			strHours += '</select>'
+
+			//----------分
+			strMinuns += '<select name="sltSMin'+i+'" id="sltSMin'+i+'" onChange="alert(this.value);">'
+	
+			for(var m=0; m<60; m++){
+				if(m<10){
+					strMinuns += '<option value="0'+m+'">0'+m+'</option>'
+				}else{
+					strMinuns += '<option value="'+h+'">'+m+'</option>'
+				}
+			}
+			strMinuns += '</select>'
+			
+			//----------秒
+			strSeconds += '<select name="sltSSeconds'+i+'" id="sltSSeconds'+i+'" onChange="alert(this.value);">'
+			
+			for(var s=0; s<60; s++){
+				if(s<10){
+					strSeconds += '<option value="0'+s+'">0'+s+'</option>'
+				}else{
+					strSeconds += '<option value="'+s+'">'+s+'</option>'
+				}
+			}
+			strSeconds += '</select>'
+			
+			$("showSTime"+i).innerHTML = strHours +' '+'时'+' '+ strMinuns +' '+'分'+' '+ strSeconds +' '+ '秒'+' ';
+			//循环完一次清空一次
+			strHours 		= '';
+			strMinuns		= '';
+			strSeconds		= '';
+		}
+	},
+	
+	//------------获取结束时间（精确到时分秒）
+	getMileageETimes : function(){
+		var tdNum			= $('addFltMlgNum');
+		var strHours 		= '';
+		var strMinuns		= '';
+		var strSeconds		= '';
+        
+		for(var i=1; i<=tdNum.value; i++){
+			//-----------时
+			strHours += '<select name="sltEHour'+i+'" id="sltEHour'+i+'" onChange="alert(this.value);">'
+				for(var h=0; h<=23; h++){
+					if(h<10){
+						strHours += '<option value="0'+h+'">0'+h+'</option>'
+					}else{
+						strHours += '<option value="'+h+'">'+h+'</option>'
+					}
+				}
+			strHours += '</select>'
+
+			//----------分
+			strMinuns += '<select name="sltEMin'+i+'" id="sltEMin'+i+'" onChange="alert(this.value);">'
+	
+			for(var m=0; m<60; m++){
+				if(m<10){
+					strMinuns += '<option value="0'+m+'">0'+m+'</option>'
+				}else{
+					strMinuns += '<option value="'+m+'">'+m+'</option>'
+				}
+			}
+			strMinuns += '</select>'
+			
+			//----------秒
+			strSeconds += '<select name="sltESeconds'+i+'" id="sltESeconds'+i+'" onChange="alert(this.value);">'
+			
+			for(var s=0; s<60; s++){
+				if(s<10){
+					strSeconds += '<option value="0'+s+'">0'+s+'</option>'
+				}else{
+					strSeconds += '<option value="'+s+'">'+s+'</option>'
+				}
+			}
+			strSeconds += '</select>'
+			
+			$("showETime"+i).innerHTML = strHours +' '+'时'+' '+ strMinuns +' '+'分'+' '+ strSeconds +' '+ '秒'+' ';
+			//循环完一次清空一次
+			strHours 		= '';
+			strMinuns		= '';
+			strSeconds		= '';
+		}
+	},
+	
+	getValues : function(){
+		var tbNum	=	$("addFltMlgNum");							//获取隐藏域对象
+		alert(tbNum);
+		for(var i=1 ; i<=tbNum.value; i++){
+			var flightNo	=	$("flightNo"+i).value;
+			alert("fltId="+flightNo);
+			var dayNum		=	$("dayNum"+i).value;
+			alert("dayNum="+dayNum);
+		    var sPonit		=	$("startPoint"+i).value;
+			alert("起点="+$("startPoint"+i).value);
+			var startTime	=	$("startTime"+i).value;
+			alert("日期="+startTime);
+			var sHours		=	$("sltSHour"+i).value;				//等价于document.getElementsByName("sltSHour"+i)[0].value;
+			var sMinutes	=	$("sltSMin"+i).value;
+			var sSeconds	=	$("sltSSeconds"+i).value;
+			alert("时分秒："+sHours+"时"+sMinutes+"分"+sSeconds+"秒");
+		    var ePonit		=	$("endPoint"+i).value;
+			alert("终点="+ePoint);
+			var endTime		=	$("leaveTime"+i).value;
+			alert("startTime="+startTime);
+			var showETime	=	$("sltEHour"+i).value;
+			alert("showSTime="+showETime);
+			var isNight		=	$("isNight"+i).value;
+			alert("isNight="+isNight);
+		}
+	}
+
+}

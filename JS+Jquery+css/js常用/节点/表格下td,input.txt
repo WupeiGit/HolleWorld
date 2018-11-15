@@ -1,0 +1,34 @@
+AddFltMlgTab : function(num){
+		$('tabMsg').style.display = "none";				//隐藏提示信息
+		$('tabOne').style.display = "";
+		
+		var clonedivfirst		=	$('divfirst').cloneNode(true);
+		var objTBody			=	document.createElement("tbody");
+		
+		var objInputAirLine		= 	null;
+		var objSltDepartCode	=	null;
+		var objSltArriveCode	=	null;
+		clonedivfirst.style.display = "";
+		
+		$('copyNum').value	= ++iCnt;
+
+		objTBody.appendChild(clonedivfirst);				
+		$("tabOne").appendChild(objTBody);
+		
+		// 根据航班号触发航空公司全称事件
+		objInputAirLine = objTBody.getElementsByTagName("td")[0].getElementsByTagName("input")[1];
+		objInputAirLine.onblur = function(){
+			var urlAirLine = 'flightMileageAdd.asp?action=toGetAirLineName&strAirCode='+this.value.substring(2,0);
+			new Ajax.Request(urlAirLine,{
+				onComplete: function(t){
+					if(t.responseText == 0){
+						objTBody.getElementsByTagName("td")[0].getElementsByTagName("input")[2].value = "";
+						objTBody.getElementsByTagName("td")[0].getElementsByTagName("input")[3].value = "";
+					}else{
+						var arrAirName	= t.responseText.split(",");
+						objTBody.getElementsByTagName("td")[0].getElementsByTagName("input")[2].value = arrAirName[0];
+						objTBody.getElementsByTagName("td")[0].getElementsByTagName("input")[3].value = arrAirName[1];
+					}
+				}
+			});
+		};

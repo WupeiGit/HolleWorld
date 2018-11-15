@@ -1,0 +1,28 @@
+function doSearchAudit2(obj){
+	obj.disabled = true;
+	var certificateNo, tranStatusRadio;
+	//if(!document.getElementById) return false;
+	var approvalRole = document.getElementById('approvalRole').value;
+	var certificateNos = document.getElementsByName('certificateNo');
+	for (var i= 0; i<certificateNos.length; i++){
+		if (certificateNos[i].checked == true){
+			certificateNo = certificateNos[i].value;
+		}
+	}
+	var tranStatusRadios = document.getElementsByName('tranStatusRadio');
+	for (var i= 0; i<tranStatusRadios.length; i++){
+		if (tranStatusRadios[i].checked == true){
+			tranStatusRadio = tranStatusRadios[i].value;
+		}
+	}
+	
+	var tranStatusRadio = document.getElementById('tranStatusRadio').value;
+	var url = '?&approvalRole='+approvalRole+'&certificateNo='+certificateNo+'&tranStatusRadio='+tranStatusRadio;
+	var txtEmpName		= document.getElementById('txtEmpName').value;
+	var txtBillNo		= document.getElementById('txtBillNo').value;
+	var schTranDeptId	= document.getElementById('schTranDeptId').value;
+	if(txtEmpName != '' && txtEmpName		!= null) url += '&txtEmpName='  +txtEmpName;	
+	if(txtBillNo  != '' && txtBillNo		!= null) url += '&txtBillNo='  +txtBillNo;	
+	if(schTranDeptId != '' && schTranDeptId		!= null) url += '&schTranDeptId='  +txtBillNo;		
+	$('frmCaSure').action = url;
+}

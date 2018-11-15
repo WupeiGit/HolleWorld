@@ -1,0 +1,56 @@
+JS判断一个数组中是否有重复值的三种方法  2010-10-15 18:36:13|  分类： Java编程经验 |  标签：js判断数组中重复值   |举报 |字号大
+中
+小 订阅 
+ 方法一:
+
+var ary = new Array("111","22","33","111");
+
+var s = ary.join(",")+",";
+
+ for(var i=0;i<ary.length;i++) {
+
+ if(s.replace(ary[i]+",","").indexOf(ary[i]+",")>-1) {
+
+  alert("数组中有重复元素：" + ary[i]);
+
+  break;
+
+ }
+
+}
+
+方法二:
+
+var ary = new Array("111","22","33","111");
+
+var nary=ary.sort();
+
+ for(var i=0;i<ary.length;i++){
+
+ if (nary[i]==nary[i+1]){
+
+  alert("数组重复内容："+nary[i]);
+
+ }
+
+}
+
+方法三:
+
+function isRepeat(arr){
+
+     var hash = {};
+
+     for(var i in arr) {
+
+         if(hash[arr[i]])
+
+              return true;
+
+         hash[arr[i]] = true;
+
+     }
+
+     return false;
+
+}

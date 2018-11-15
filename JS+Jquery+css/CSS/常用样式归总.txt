@@ -1,0 +1,7 @@
+1.<span style="text-decoration:line-through;">删除线效果</span>
+1、html标签<del>￥59</del>可以实现
+2、css 属性text-decoration:line-through也可以实现 
+3、文本自动换行：<label id="deptName" style="word-break:break-all;">${deptNameString}</label>
+4、td文本内容不换行：<th nowrap="nowrap">账款日期</th>
+
+

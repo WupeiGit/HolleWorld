@@ -1,0 +1,16 @@
+js中如何刷新页面
+
+  a.刷新本页面window.location.reload()
+ b.window.parent.location.reload();	//刷新父页面 
+  b.刷新父页面window.opener.location.reload();
+  c.刷新父页面的父页面opener.opener.location.reload()
+
+window.location.href=window.location.href;
+
+
+<script type="text/javascript"> 
+//刷新上级页面 
+//window.parent.main.document.location.reload(); 
+//刷新当前页面 
+document.location.reload(); 
+</script> 

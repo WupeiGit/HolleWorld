@@ -1,0 +1,176 @@
+------------------------------------------------------js
+	//获取原部门显示部门
+	getAndShowDept : function(obj){
+		var lendType 		= $(obj)[$(obj).selectedIndex].value;
+		var objBelongDept	= $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];	//获取第一个select对象
+		var belongDeptId 	= objBelongDept[objBelongDept.selectedIndex].value;									//获取对象的选中值
+		var url = '?action=getComStockNumByCodeDeptId&comCode='+comCode+'&belongDeptId='+belongDeptId;
+		
+		new Ajax.Request(url,{
+			onComplete : function(t){
+				var returnStockNum	= t.responseText;
+				if(returnStockNum == 0){
+					spanStockNum.innerHTML = 0;
+				}else{
+					spanStockNum.innerHTML = returnStockNum;
+				}
+			}
+		});
+	}
+
+	
+	//获取某物品某部门的库存量
+	getStockNum : function(obj){
+		var belongDeptId = $(obj)[$(obj).selectedIndex].value;
+		var comCode		 = $('hidCommodityCode').value;
+		var spanStockNum = $(obj).parentNode.parentNode.childNodes[1].getElementsByTagName('span')[0];	//获取当前obj父对象的第一个span
+		var url = '?action=getComStockNumByCodeDeptId&comCode='+comCode+'&belongDeptId='+belongDeptId;
+		
+		new Ajax.Request(url,{
+			onComplete : function(t){
+				var returnStockNum	= t.responseText;
+				if(returnStockNum == 0){
+					spanStockNum.innerHTML = 0;
+				}else{
+					spanStockNum.innerHTML = returnStockNum;
+				}
+			}
+		});
+	},
+---------------------------------------------------HTMl
+<!--#include virtual="/inc/action/stockOrderOutAction.asp" -->
+<!--#include virtual="inc/dao/compDeptDAO.asp" -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>新增-物品出库单</title>
+<link href="/style/common.css" rel="stylesheet" type="text/css" />
+<link href="/style/admin.css" rel="stylesheet" type="text/css" />
+<link href="/style/calendar.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/style/js/prototype.js"></script>
+<script type="text/javascript" src="/style/js/common.js"></script>
+<script type="text/javascript" src="/style/js/ajax.js"></script>
+<script type="text/javascript" src="/style/js/alt.js"></script>
+<script type="text/javascript" src="/style/js/stockOrderOut.js"></script>
+<style type="text/css">
+.headerStyle1 { 
+	width:184px; 
+	line-height:22px; 
+	border:2px solid #F8F8F8; 
+	background-color:#5CACEE; 
+	text-align:left; 
+	margin-top:5px; 
+	padding:2px; 
+	color:#FFF; 
+	text-align:center; 
+	margin-bottom:10px; }
+</style>
+</head>
+<%
+Dim rs, sqlComty, i, max_soId
+Dim slctCommCodeTitle : slctCommCodeTitle = GetSafeStr(Request.Form("checkStockOutCmd"))
+		sqlComty	= "select commodityCode, title, comId from ad_commodity with(noLock) where 1=1 and stockNum > 0"
+		max_soId = GetRsToString("select soId=IsNull(max(soId)+1,10000) from ad_stockOrderOut with(noLock) where 1=1", ",")
+		
+	If GetRs(rs, sqlComty) Then
+		Dim pg_commodityCode	:	pg_commodityCode = Trim(rs("commodityCode"))
+		Dim pg_title			:	pg_title		 = Trim(rs("title"))		
+	End If
+	
+	Call DestoryRs(rs)
+%>
+<body>
+<form name="frmOutDetialAdd" id="frmOutDetialAdd" action="?action=stockOrderOutAddSure&soId=<%=max_soId%>" method="post" onsubmit="return stockOrderOut.toCheckStockOutDetailAdd();">
+<table border="0" cellpadding="0" cellspacing="1" class="tabStyle6" style="width:100%" >
+	<tr>
+		<th>填写内容（全部为必填）</th>
+	</tr>
+	<tr>
+		<td style="padding:10px" class="cList_li_150px_margin5px">
+        	<div class="headerStyle1">
+                    <strong>第一步：选择出库物品信息</strong>
+            </div>
+        	<span id="spanComOutRadio"><%=CreateStockByCommodityRadio("checkStockOutCmd", slctCommCodeTitle, "onclick", "stockOrderOut.toShowOutComName(this.value);")%></span>
+			<!--<%'=GetSelectCommodityInfo("slctCommCode","slctCommCode",slctCommCodeTitle)%>&nbsp;&nbsp;
+            <span id="commStockNumMsg" class="font_red"></span><input type="hidden" name="hidCommStockNum" id="hidCommStockNum" value="0"/>-->
+            
+		</td>
+	</tr>
+	<tr id="showAddOutDetail" style="display:none">
+		<td style="padding:5px">
+        	<div class="headerStyle1">
+                    <strong>第二步：同批次出库物品信息</strong>
+            </div>
+			<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle16" style="margin-bottom:10px;">
+				<tr>
+					<th colspan="10">物品出库信息</th>
+				</tr>
+				<tr>
+					<td width="10%"><span class="font_red">*</span>&nbsp;出库编码</td>
+					<td width="20%"><input type="text" id="orderCode" name="orderCode" value="02<%=max_soId%>" size="15" readonly="readonly" class="font_gray"/></td>
+					<td width="10%"><span class="font_red">*</span>&nbsp;领用性质</td>
+					<td width="20%"><%=SltOutUseType("useType","","","")%></td>
+					<td width="10%"><span class="font_red">*</span>&nbsp;年度</td>
+					<td><input type="text" id="yearValue" name="yearValue" value="<%=Year(now())%>" size="15" maxlength="10"></td>
+				</tr>
+				<tr>
+					<td><span class="font_red">*</span>&nbsp;出库事由</td>
+					<td colspan="5"><textarea name="note" id="note" rows="2" style="width:60%;">正常出库</textarea></td>
+				</tr>
+			</table>
+			<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle16">
+				<tr>
+					<th>物品出库详情—新增</th>
+				</tr>
+				<tr>
+					<td>
+					<input name="btnAddTb" id="btnAddTb" type="button" class="btn_bg_style01" onClick="stockOrderOut.AddOrderOutDetailTab(1);" value="增加1行"/>&nbsp;
+					<input name="btnAddTb5" id="btnAddTb5" type="button" class="btn_bg_style01" onClick="stockOrderOut.AddOrderOutDetailTab(5);" value="增加5行"/>&nbsp;
+					<input name="btnCutTb" id="btnCutTb" type="button" disabled="disabled" class="btn_bg_style01" onClick="stockOrderOut.CutOrderOutDetailTab();stockOrderOut.countSumStockOutNum(this);" value="减少1行" />
+					<input type="hidden" name="copyNum" id="copyNum" value="0" />
+					</td>
+				</tr>
+				<tr>
+					<td><table width="100%" border="1" cellpadding="0" cellspacing="2px" id="tbOrderOutDetialAdd">
+                    	<tr style="background:#CCC">
+                        	<td width="10%"><span class="font_red">*</span> (原)归属部门</td>
+                        	<td width="10%"><span class="font_red">*</span> 库存量</td>
+                            <td width="5%"><span class="font_red">*</span> 拆借性质</td>
+                            <td width="10%"><span class="font_red">*</span> (现)分配部门</td>
+                        <td width="10%"><span class="font_red">*</span> 数 量</td>
+                            <td width="10%"><span class="font_red">*</span> 领用人</td>
+                        </tr>
+						<tbody id="tableSignUpInfo">
+							<tr id="trFirst" style="display:block;">
+                            	<td><%=GetSelectBelongDept("belongDept","belongDept","-=请选择部门=-","","onchange","stockOrderOut.getStockNum(this);")%></td>
+                                <td><input type="hidden" name="commodityTitle" id="commodityTitle" value="" style="border:0px;color:gray;" readonly="readonly" onfocus="this.blur();" />
+                                	<span id="stockNum" class="font_red"></span>
+                                	<input type="hidden" name="hidCommodityCode" id="hidCommodityCode" value="" />
+                                   </td>
+								<td><%=CreateSltLendType("lendType","","onchange","stockOrderOut.getAndShowDept(this);")%></td>
+
+								<td><%=GetCompDept(conn,"allotDept","allotDept","-=请选择部门=-","","","","HTML")%></td>
+                                <td><input type="text" name="amount" id="amount" onkeyup="stockOrderOut.countSumStockOutNum(this);value=value.replace(/[^\d\.-]/g,'');" onkeydown="stockOrderOut.countSumStockOutNum(this);" size="10" />&nbsp; </td>
+
+								<td><input type="text" name="getedName" id="getedName" value="" size="15" /></td>
+							</tr>
+						</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input type="submit" name="subOutDetailAdd" id="subOutDetailAdd" class="btn_bg_style04_50" value="保 存"/>
+						<input type="button" name="btnCal" id="btnCal" class="btn_bg_style01_50" value="返 回" onclick="toUrl('stockOrderOutList.asp')" />
+                        &nbsp;&nbsp;  当前出库总数：<label id="sumStockOutNum" class="font_red">0</label>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+</form>
+</body>
+</html>
+<!--#include virtual="/conn/incConn.asp" -->

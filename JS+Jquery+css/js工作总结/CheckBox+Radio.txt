@@ -1,0 +1,89 @@
+
+----------------------------js-----------------------------------------------
+var exam{
+	//点击单选时触发
+	 selectThisLine : function(obj, listMode){
+		 if (listMode == 1){				//为单选框时
+			if(this.pObj != undefined) this.pObj.className = this.pObjStyle;
+			this.pObj = obj;
+			this.pObjStyle = obj.className;
+			this.empId = obj.firstChild.childNodes[0].value;
+			obj.firstChild.childNodes[0].checked = true;
+			obj.className = "listSelectedS8";
+		 }
+	}
+function loadEmplist(){
+	var deptIDs = getCheckBoxValues(document.getElementsByName('deptIDs'));
+	new Ajax.Request('/inc/action/statAction.asp?action=loadEmpList&deptIDs='+ deptIDs,{
+		onComplete: function(t){
+			if(t.responseText == '暂无信息...'){
+				$('_empIDs').update('<label class="font_gray">请先选择部门后，再进行人员指定。</label>');
+			}else{
+				$('_empIDs').update(t.responseText);
+			}
+		}
+	})
+}
+
+function setSalers(obj){
+	if(obj.checked){
+		$('_setSalers').show();
+	}else{
+		$('_setSalers').hide();
+	}
+}
+//全选
+function selectAllChks(){
+	var objChks=document.getElementsByName("checkBox");
+	
+	if($("checkAll").getAttribute("checked")==true){
+		for(var i=0;i<objChks.length;i++){
+			 objChks[i].setAttribute("checked","checked");
+		}
+	}else{
+		for(var i=0;i<objChks.length;i++){
+			 objChks[i].setAttribute("checked","");
+		}
+	}
+}
+//验证是否选择了复选框
+function checkIsSlt(){
+	var sltInfo = document.getElementsByName("checkB");
+	var strSltVal = "";
+	
+	for(var i=0;i<sltInfo.length;i++){
+		 if(sltInfo[i].checked==true)
+		 {
+			 strSltVal=sltInfo[i].value;
+		 }
+	}
+	if(strSltVal.blank()){
+		alert("[提示] 请选中一个活动进行操作！");
+	}else{
+	  return strSltVal;
+	}
+}
+//判断是多选还是单选
+function searchList(mode, appId){
+	$('frm').action = '?appId='+appId+'&mode='+ mode;
+	$('frm').submit();
+}
+//点击复选框触发事件
+function selectThisLineCheck(tdNode, obj){
+	var trNode = tdNode.parentNode;
+	if(obj.checked) {trNode.className = 'listSelectedS8';}
+	else {trNode.className = '';}
+}
+
+}
+---------------------------------页面----------------------------------------------------
+
+<tr onclick="exam.selectThisLine(this, <%=listMode%>);">
+					<td style="text-align:center;">
+					<% If (listMode = "0") Then %>
+						<input type="checkbox" name="checkBox" id="checkBox" value="<%=rs("empId")%>" onclick="RowEvent.selectThis(this.parentNode,this,'listSelectedS3');"/>
+					<% Else %>
+						<input type="radio" name="radio" id="radio" value="<%=rs("empId")%>" />
+					<% End If %>
+					</td>
+	.......................................

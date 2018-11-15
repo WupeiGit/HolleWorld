@@ -1,0 +1,98 @@
+/**
+获取文本内容
+*/  
+ 
+ 
+ 
+ 
+function gettxt(text){ 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+var txt = text.options[text.selectedIndex].text; 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+alert("
+文本为
+:"+txt); 
+ 
+ 
+ 
+ 
+} 
+  
+/**
+获取值内容
+*/ 
+  
+function getVal(text){ 
+ 
+ 
+ 
+ 
+ 
+ 
+var val = text.value;  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+alert("
+值为
+:"+val); 
+ 
+ 
+ 
+ 
+ 
+} 
+ 
+</script> 
+ 
+</head> 
+  
+<body 
+bgcolor= 
+"#FFFFFF" 
+text= 
+"#000000" 
+leftmargin= 
+"0" 
+topmargin= 
+"40" 
+marginwidth= 
+"0" 
+marginheight= "0" > 
+  
+<select id="a" name="a" onChange="gettxt(this);getVal(this)"> 
+<option value="1">
+张
+1</option> 
+<option value="2">
+张
+2</option> 
+<option value="3">
+张
+3</option> 
+</select> 

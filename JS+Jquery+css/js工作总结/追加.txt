@@ -1,0 +1,4 @@
+// 取得表格对象
+var oTable = document.all["table_id"];
+// 调用table对象的insertRow方法,增加一个新行到表格末尾,并返回新增的tr对象
+var oTr = oTable.insertRow();

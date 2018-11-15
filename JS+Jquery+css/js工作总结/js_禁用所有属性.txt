@@ -1,0 +1,23 @@
+	//禁用页面的选择项
+	toDisabledField : function(){
+		 var array=document.getElementsByTagName("input");//禁用input，radio
+		 for(var i=0;i<array.length;i++)
+		 {
+		  if(array[i].type=="radio") {
+		   array[i].disabled = true;
+		  } else {
+		   array[i].readOnly=true;
+		  }
+		 }
+		 var array1=document.getElementsByTagName("checkbox");//禁用textarea
+		 for(var i=0;i<array1.length;i++)
+		 {
+		  array1[i].readOnly=true;
+		 }
+		 var array2=document.getElementsByTagName("select");//禁用select
+		 for(var i=0;i<array2.length;i++)
+		 {
+		  array2[i].disabled=true;
+		 }
+
+	},

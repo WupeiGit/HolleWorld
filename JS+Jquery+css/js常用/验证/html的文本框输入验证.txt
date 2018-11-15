@@ -1,0 +1,195 @@
+验证只能为数字：onkeyup="value=value.replace(/[^\d\.-]/g,'')"
+验证是数字，负数，和小数： onkeyup="value=value.replace(/[^\- \d.]/g,'')"
+
+不能为空 
+<input onblur="if(this.value.replace(/^ +| +$/g,'')=='')alert('不能为空!')">
+
+/[^\- \d.]/g 可以是负数的数值
+/(\.\d{2})\d*$/,'\$1') 自动保留两位小数
+<input type="text" id="factPrice" onkeyup="this.value=this.value.replace(/[^\- \d.]/g,'')" 
+onblur="sumMoneyRmbValue();this.value=this.value.replace(/(\.\d{2})\d*$/,'\$1')" />
+
+只能输入英文和数字
+<input onblur="if(/[^0-9a-zA-Z]/g.test(value))alert('有错')">
+<input onkeyup="value=value.replace(/[^0-9a-zA-Z]/g,'')"/>
+<input type="text" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9]/g,'')">
+
+判断字符由字母和数字，下划线,点号组成.且开头的只能是下划线和字母 
+/^([a-zA-z_]{1})([\w]*)$/g.test(str)
+
+只能输入数字
+<input name="text" type="text" id="NewPage" onKeyUp="value=value.replace(/\D/g,'')" onafterpaste="value=value.replace(/\D/g,'')" >
+
+只能输入中文
+<input type="text" onkeyup="value=value.replace(/[^\u4E00-\u9FA5]/g,'')">
+
+只能输入英文
+<input type="text" onkeyup="value=value.replace(/[^\a-\z\A-\Z]/g,'')">
+<input type="text" onkeyup="value=value.replace(/[^a-zA-Z]/g,'')">
+
+只能输入中文、英文、数字、@符号和.符号
+<input type="text" onkeyup="value=value.replace(/[^\a-\z\A-\Z0-9\u4E00-\u9FA5\@\.]/g,'')">
+
+只允许输入英文，且不能粘贴也无法弹出粘贴菜单
+<input type="text" onkeyup="value=value.replace(/[^\a-\z\A-\Z]/g,'')" onkeydown="fncKeyStop(event)" onpaste="return false" oncontextmenu = "return false"/>
+
+只能输入数字和点号(注意:在[^\d\.]里的d不能写成大写D,否则就变成除了数字以外的所有字符)
+<input name="price" type="text" size="8" maxlength="8" onkeyup="value=value.replace(/[^\d\.]/g,'')" >
+
+总而言之:先在<input>里输入onkeyup="value=value.replace(/[^\X]/g,'')" 然后在(/[\X]/g,'')里的X换成你想输入的代码就可以了
+
+中文：u4E00-u9FA5
+数字：d、0-9
+英文：a-z、A-Z
+其它符号@,点或其它符号.也可以多个,用\隔开就行了.
+例如:
+中、英文和数字加@符号加点符号：\a-\z\A-\Z0-9\u4E00-\u9FA5\@\.
+
+若想在文本框里不能右键弹出菜单和不能粘贴进复制的信息的话就要在<input>里输入 onKeyDown="fncKeyStop(event)" onpaste="return false" oncontextmenu="return false;"
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+.文本框只能输入数字代码(小数点也不能输入)
+<input onkeyup="this.value=this.value.replace(//D/g,'')" onafterpaste="this.value=this.value.replace(//D/g,'')"> 
+
+2.只能输入数字,能输小数点.
+<input onkeyup="if(isNaN(value))execCommand('undo')" onafterpaste="if(isNaN(value))execCommand('undo')">
+<input name=txt1 onchange="if(//D/.test(this.value)){alert('只能输入数字');this.value='';}"> 
+
+3.数字和小数点方法二
+<input type=text t_value="" o_value="" onkeypress="if(!this.value.match(/^[/+/-]?/d*?/.?/d*?$/))this.value=this.t_value;else this.t_value=this.value;if(this.value.match(/^(?:[/+/-]?/d+(?:/./d+)?)?$/))this.o_value=this.value" onkeyup="if(!this.value.match(/^[/+/-]?/d*?/.?/d*?$/))this.value=this.t_value;else this.t_value=this.value;if(this.value.match(/^(?:[/+/-]?/d+(?:/./d+)?)?$/))this.o_value=this.value" onblur="if(!this.value.match(/^(?:[/+/-]?/d+(?:/./d+)?|/./d*?)?$/))this.value=this.o_value;else{if(this.value.match(/^/./d+$/))this.value=0+this.value;if(this.value.match(/^/.$/))this.value=0;this.o_value=this.value}"> 
+
+4.只能输入字母和汉字
+<input onkeyup="value=value.replace(/[/d]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[/d]/g,''))" maxlength=10 name="Numbers"> 
+
+5.只能输入英文字母和数字,不能输入中文
+<input onkeyup="value=value.replace(/[^/w/.//]/ig,'')"> 
+
+6.只能输入数字和英文<font color="Red">chun</font>
+<input onKeyUp="value=value.replace(/[^/d|chun]/g,'')"> 
+
+7.小数点后只能有最多两位(数字,中文都可输入),不能输入字母和运算符号:
+<input onKeyPress="if((event.keyCode<48 || event.keyCode>57) && event.keyCode!=46 || //./d/d$/.test(value))event.returnValue=false"> 
+
+8.小数点后只能有最多两位(数字,字母,中文都可输入),可以输入运算符号:
+<input onkeyup="this.value=this.value.replace(/^(/-)*(/d+)/.(/d/d).*$/,'$1$2.$3')">
+
+
+
+————————————————————————————————————————----------------------------------------------
+
+只能输入汉字：
+<input onkeyup="value=value.replace(/[^/u4E00-/u9FA5]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^/u4E00-/u9FA5]/g,''))">
+
+只能输入数字：
+<input onkeyup="value=value.replace(/[^/d]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^/d]/g,''))">
+
+
+只能输入英文和数字：
+<input onkeyup="value=value.replace(/[/W]/g,'') "onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^/d]/g,''))">
+
+控制输入框只能输入文字或数字，也可以不允许输入特殊字符
+这里不允许输入如下字符: (像 !@#$%^&* 等)<br>
+<textarea rows=2 cols=20 name=comments onKeypress="if ((event.keyCode > 32 && event.keyCode < 48) || (event.keyCode > 57 && event.keyCode < 65) || (event.keyCode > 90 && event.keyCode < 97)) event.returnValue = false;">
+
+只禁止空格输入
+onkeyup="value=value.replace(//s/g,'')"
+
+只能输入中文和英文：
+onkeyup="value=value.replace(/[^/a-zA-Z/u4E00-/u9FA5]/g,'')" onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^/a-zA-Z/u4E00-/u9FA5]/g,''))"
+
+ 
+
+ 
+
+//这个可以验证15位和18位的身份证，并且包含生日和校验位的验证。   
+ var aCity = { 11: "北京", 12: "天津", 13: "河北", 14: "山西", 15: "内蒙古", 21: "辽宁", 22: "吉林", 23: "黑龙江 ", 31: "上海", 32: "江苏", 33: "浙江", 34: "安徽", 35: "福建", 36: "江西", 37: "山东", 41: "河南", 42: "湖北 ", 43: "湖南", 44: "广东", 45: "广西", 46: "海南", 50: "重庆", 51: "四川", 52: "贵州", 53: "云南", 54: "西藏 ", 61: "陕西", 62: "甘肃", 63: "青海", 64: "宁夏", 65: "新疆", 71: "台湾", 81: "香港", 82: "澳门", 91: "国外 " }
+
+function isIdCardNo(num) {
+
+    num = num.toUpperCase();
+    //身份证号码为15位或者18位，15位时全为数字，18位前17位为数字，最后一位是校验位，可能为数字或字符X。   
+    if (!(/(^/d{15}$)|(^/d{17}([0-9]|X)$)/.test(num))) {
+        //alert('输入的身份证号长度不对，或者号码不符合规定！/n15位号码应全为数字，18位号码末位可以为数字或X。');
+        return false;
+    }
+    //校验身份证的前两位是否合法
+    if (aCity[parseInt(num.substr(0, 2))] == null) {
+        //alert("Error:身份证号码前两位输入有误，非法地区！");
+        return false;
+     }
+    //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。 
+    //下面分别分析出生日期和校验位 
+    var len, re;
+    len = num.length;
+    if (len == 15) {
+        re = new RegExp(/^(/d{6})(/d{2})(/d{2})(/d{2})(/d{3})$/);
+        var arrSplit = num.match(re);
+
+        //检查生日日期是否正确 
+        var dtmBirth = new Date('19' + arrSplit[2] + '/' + arrSplit[3] + '/' + arrSplit[4]);
+        var bGoodDay;
+        bGoodDay = (dtmBirth.getYear() == Number(arrSplit[2])) && ((dtmBirth.getMonth() + 1) == Number(arrSplit[3])) && (dtmBirth.getDate() == Number(arrSplit[4]));
+        if (!bGoodDay) {
+           // alert('输入的身份证号里出生日期不对！');
+            return false;
+        }
+        else {
+            //将15位身份证转成18位 
+            //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。 
+            var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+            var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+            var nTemp = 0, i;
+            num = num.substr(0, 6) + '19' + num.substr(6, num.length - 6);
+            for (i = 0; i < 17; i++) {
+                nTemp += num.substr(i, 1) * arrInt[i];
+            }
+            num += arrCh[nTemp % 11];
+            return num;
+        }
+    }
+    if (len == 18) {
+        re = new RegExp(/^(/d{6})(/d{4})(/d{2})(/d{2})(/d{3})([0-9]|X)$/);
+        var arrSplit = num.match(re);
+
+        //检查生日日期是否正确 
+        var dtmBirth = new Date(arrSplit[2] + "/" + arrSplit[3] + "/" + arrSplit[4]);
+        var bGoodDay;
+        bGoodDay = (dtmBirth.getFullYear() == Number(arrSplit[2])) && ((dtmBirth.getMonth() + 1) == Number(arrSplit[3])) && (dtmBirth.getDate() == Number(arrSplit[4]));
+        if (!bGoodDay) {
+           // alert(dtmBirth.getYear());
+            //alert(arrSplit[2]);
+           // alert('输入的身份证号里出生日期不对！');
+            return false;
+        }
+        else {
+            //检验18位身份证的校验码是否正确。 
+            //校验位按照ISO 7064:1983.MOD 11-2的规定生成，X可以认为是数字10。 
+            var valnum;
+            var arrInt = new Array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+            var arrCh = new Array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+            var nTemp = 0, i;
+            for (i = 0; i < 17; i++) {
+                nTemp += num.substr(i, 1) * arrInt[i];
+            }
+            valnum = arrCh[nTemp % 11];
+            if (valnum != num.substr(17, 1)) {
+                //alert('18位身份证的校验码不正确！应该为：' + valnum);
+                return false;
+            }
+            return true;
+            //return num;
+        }
+    }
+    return false;
+}
+已经验证过可以放心使用：
+可以直接调用验证客户端输入的格式是否符合身份证格式？ 各处的alert（“”）都注释掉了，如果去掉注释则可以提升客户端哪里输入是错误的。
+
+
+
+
+---------------------------------------------
+
+
+有关正则表达式1.只能输入数字和英文的：<input   onkeyup= "value=value.replace(/[\W]/g, ' ')   "onbeforepaste= "clipboardData.setData( 'text ',clipboardData.getData( 'text ').replace(/[^\d]/g, ' ')) ">2.只能输入数字的：<input   onkeyup= "value=value.replace(/[^\d]/g, ' ')   "onbeforepaste= "clipboardData.setData( 'text ',clipboardData.getData( 'text ').replace(/[^\d]/g, ' ')) ">3.只能输入全角的：<input   onkeyup= "value=value.replace(/[^\uFF00-\uFFFF]/g, ' ') "   onbeforepaste= "clipboardData.setData( 'text ',clipboardData.getData( 'text ').replace(/[^\uFF00-\uFFFF]/g, ' ')) ">4.只能输入汉字的：<input   onkeyup= "value=value.replace(/[^\u4E00-\u9FA5]/g, ' ') "   onbeforepaste= "clipboardData.setData( 'text ',clipboardData.getData( 'text ').replace(/[^\u4E00-\u9FA5]/g, ' ')) ">

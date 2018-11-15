@@ -1,0 +1,140 @@
+1------
+var obj = document.getElementById("divfirst");
+var table = obj.cells[0].childNodes[0];
+var label =  table.rows[2].cells[5].children[2];
+label.id = "label_2";
+alert(label.id+" "+label.innerHTML);
+
+
+2---------
+----------js:
+AddFltMlgTab : function(num){
+		var clonedivfirst = $('divfirst').cloneNode(true);
+		//var cloneTab 	  = $('tabOne').cloneNode(true);
+		//var cloneTr1	  = $('tabTr3').cloneNode(true);
+		var objTBody = document.createElement("tbody");
+    	
+		var addNum		= parseInt($('copyNum').value)+2;
+		clonedivfirst.style.display = "";
+		$('copyNum').value =++iCnt;									
+		var urlStart 		= 'flightMileageAdd.asp?action=toSltDepartureCode&strNum='+ addNum;
+		var urlEnd			= 'flightMileageAdd.asp?action=toSltArriveCode&strNum='+ addNum;
+
+			new Ajax.Request(urlStart,{
+				onComplete: function(t){
+					if(t.responseText != ''){
+						var departCodeNode = $("tabOne").rows[0].cells[0].children[0].childNodes[0].rows[2].cells[3];
+						var sltDepartCode = t.responseText+'<label id="showDepartAirport'+ addNum +'" class="font_gray">'+addNum+'</label><input type="text" name="departureAirport'+ addNum +'" id="toGetEmpId'+ addNum +'" />';
+						departCodeNode.innerHTML =  sltDepartCode;
+					}
+				}
+			});
+			
+			new Ajax.Request(urlEnd,{
+				onComplete: function(t){
+					if(t.responseText != ''){
+						//clonedivfirst.cells[3].childNodes[3].innerHTML = t.responseText+'<label id="showArriveCode'+ addNum +'" class="font_gray">&nbsp;</label><input type="text" name="arriveAirport'+ addNum +'" id="arriveAirport'+ addNum +'" />';
+					}
+				}
+			});
+
+		objTBody.appendChild(clonedivfirst);						
+		$("tabOne").appendChild(objTBody);
+		
+        $("btnSub").disabled = false;
+		
+		if(parseInt(iCnt) == 0){
+			$("btnSub").disabled = true;													//禁用
+		}else if(parseInt(iCnt)  < num-1 && parseInt(iCnt)  > 0){
+			$("btnAdd").disabled = false;													//启用
+			$("btnSub").disabled = false;
+		}else if(parseInt(iCnt)  == num-1){
+			$("btnAdd").disabled = true;
+		}
+	
+	},
+-------------html页面
+  <td colspan="2" style="padding:5px">
+                    	<table width="100%" border="0" cellpadding="0" cellspacing="0" id="tabOne">
+                        	 <tbody id="tTabSignUpInfo">
+                                <tr id="divfirst" style="display:block;">
+                                    <td>
+                                        <table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16" id="tabTwo">
+                                            <tr>
+												<td><span class="font_red">*</span> 第几天：</td>
+                                                <td><input type="text" name="dayNum" id="dayNum" size="5" class="textStyleDefault" onkeyup=""/>&nbsp; <span class="font_gray">/ 天</span></td>
+      											<td width="10%"><span class="font_red">*</span> 航班号：</td>
+                                                <td width="22%"><input type="text" name="flightNo" id="flightNo" size="20" class="textStyleDefault" /></td>
+												<td width="10%"><span class="font_red">*</span> 舱位：</td>
+                                                <td><input type="text" name="airfares" id="airfares" size="20" class="textStyleDefault" /></td>
+											</tr>
+											<tr>
+												<td><span class="font_red">*</span> 航站楼：</td>
+                                                <td><input type="text" name="terminal" id="terminal" class="textStyleDefault"/></td>
+												<td><span class="font_red">*</span>飞机机型：</td>
+                                                <td><input type="text" name="planeTypes" id="planeTypes" size="20" class="textStyleDefault"/></td>
+												<td><span class="font_red">*</span> 是否过夜：</td>
+												<td>
+                                                	<select name="sltNight" id="sltNight">
+                                                        <option id="opIsNight" value="0">否</option>
+                                                        <option id="opIsNight" value="1">是</option>
+                                                    </select>
+                                                    &nbsp; <span class="font_gray">默认项："否"</span>
+												</td>
+                                            </tr>
+											<tr  id="tabTr3">
+												<td width="10%"><span class="font_red">*</span> 出发城市：</td>
+                                                <td width="22%"><input type="text" name="startPoint" id="startPoint" size="20" class="textStyleDefault" /></td>
+                                                <td width="10%"><span class="font_red">*</span> 出发机场(三字码)：</td>
+                                                <td width="22%"><%=CreateSltFltItemName("departureCode1","-出发机场三字码-",sltDepartCode,"onchange","FltMlg.toShowDepartAirport(this[this.selectedIndex].value);")%>
+																<label id="showDepartAirport1" class="font_gray">&nbsp;</label>
+																<input type="hidden" name="departureAirport1" id="departureAirport1" size="20" />
+																
+												</td>
+												<td width="10%"><span class="font_red">*</span> 起飞时间：</td>
+                                                <td><input type="text" name="startTime" id="startTime" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand;textStyleDefault" /><label>&nbsp;</label>
+                                                    <label><%=CreateSltByTimeHour("leaveOnHour", "10", "", "", "")%> 时</label>
+                                                    <label><%=CreateSltByTimeMinute("leaveOnMinute", "00", "", "", "")%> 分</label>
+                                                    <label><%=CreateSltByTimeMinute("leaveOnSecond", "00", "", "", "")%> 秒</label>
+                                                </td>
+											</tr>
+											<tr  id="tabTr4">
+												<td><span class="font_red">*</span> 抵达城市：</td>
+                                                <td><input type="text" name="endPoint" id="endPoint" size="20" class="textStyleDefault" /></td>
+											    <td><span class="font_red">*</span> 抵达机场(三字码)：</td>
+                                                <td><%=CreateSltFltItemName("arriveCode1","-抵达机场三字码-",sltArriveCode,"onchange","FltMlg.toShowArriveCode(this[this.selectedIndex].value);")%>
+													<label id="showArriveCode1" class="font_gray">&nbsp;</label>
+													<input type="hidden" name="arriveAirport1" id="arriveAirport1" size="20" />
+												</td>
+												<td><span class="font_red">*</span> 达到时间：</td>
+                                                <td><input type="text" name="leaveTime" id="leaveTime" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand;textStyleDefault" /><label>&nbsp;</label>
+                                                	<label><%=CreateSltByTimeHour("returnOnHour", "10", "", "", "")%> 时</label>
+                                                    <label><%=CreateSltByTimeMinute("returnOnMinute", "00", "", "", "")%> 分</label>
+                                                    <label><%=CreateSltByTimeMinute("returnOnSecond", "00", "", "", "")%> 秒</label>
+												</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                        	</tbody>
+                        </table>
+                    </td>
+                </tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+toCheckSetMoney : function(obj,approvMoney){
+		var setMoney = $(obj).value;
+		if(setMoney.indexOf('.') != -1 && setMoney.split('.')[1].length > 2){
+			$(obj).value = parseFloat(setMoney).toFixed(2);
+		}else{
+			value=value.replace(/[^\d\.-]/g,'')
+		}
+		
+		if(setMoney > parseFloat($F('canDeductMoney'))){
+			alert('抱歉，当前输入金额不能超过【'+ $F('canDeductMoney') +'】！');
+			$(obj).value = '';
+		}
+		
+		if(parseFloat(setMoney)- parseFloat(approvMoney) > 0){
+			alert('抱歉，当前输入金额不能超过审批金额！');
+			$(obj).value = '';
+		}
+	},

@@ -1,0 +1,30 @@
+	//选择【月份】时查询显示信息
+	getDetailByMonth : function(obj){
+		//获取节点
+		var yearElmentName				= $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];
+		var categoryElmentName			= $(obj).parentNode.parentNode.childNodes[2].getElementsByTagName('select')[0];		
+		var itemCodeElmentName			= $(obj).parentNode.parentNode.childNodes[3].getElementsByTagName('select')[0];	
+		var detailElmentName			= $(obj).parentNode.parentNode.childNodes[4].getElementsByTagName('select')[0];	
+		var budgetPrice					= $(obj).parentNode.parentNode.childNodes[5];
+		var budgetPrice_itemBalance 	= $(obj).parentNode.parentNode.childNodes[6];
+		var itemBalance					= $(obj).parentNode.parentNode.childNodes[7];
+		//获取值
+		var transactDeptId				= $('sltTransactDeptId').value;
+		var monthValue					= $(obj)[$(obj).selectedIndex].value;		
+		var yearValue					= yearElmentName[yearElmentName.selectedIndex].value;
+		var categoryName				= categoryElmentName[categoryElmentName.selectedIndex].value;
+		var itemCode					= itemCodeElmentName[itemCodeElmentName.selectedIndex].value;
+		var descId						= detailElmentName[detailElmentName.selectedIndex].value;		
+
+		var url						= '?action=getDetailInfo&itemCode='+itemCode+'&monthValue='+monthValue+'&yearValue='+yearValue+'&descId='+descId+'&deptId='+transactDeptId;
+		new Ajax.Request(url,{
+			onComplete: function(t){
+				var context = t.responseText;
+				//alert(context);
+				budgetPrice.innerHTML				=	context.split(',')[0];
+				budgetPrice_itemBalance.innerHTML	=	context.split(',')[1];
+				itemBalance.innerHTML				=	context.split(',')[2];
+			}
+		});
+	},
+	

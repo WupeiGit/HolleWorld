@@ -1,0 +1,6 @@
+通过JavaScript。。
+var data=new Array("中国","日本","韩国","朝鲜","印度");
+for(var i=0;i<data.length;i++){var getData = data[i];
+//get ID就是你的下拉框select的ID。。
+document.getElementById("show1").options.add(new Option(getData,getData));}
+

@@ -1,0 +1,47 @@
+window.location = function(){
+	if(window.event.keyCode == 13)//enter 回车键
+	{
+		//toUrl('loadLedger'+$('#financeCode').val);
+		return true; //提交表单
+		return false; //输入enter时不提交表单
+	}
+}
+
+-------------------我的应用--------
+function gosearch()
+{
+	if(window.event.keyCode == 13)//enter 回车键
+	{
+		//toUrl('loadLedger'+$('#financeCode').val);
+		return true; 
+	}
+} 
+
+	<form id="frmSearch" action="loadLedger" method="post">
+		${ Company }&nbsp;
+		操作<input type="text" id="empName" name="empName" size="8" value="${ empName }" />&nbsp;
+		财务人员<input type="text" id="financeEmpNames" name="financeEmpNames" size="8" value="${ financeEmpNames }" />&nbsp;
+		商品编码<input type="text" id="productCode" name="productCode" size="20" value="${ productCode }" />&nbsp;
+		财务编码<input type="text" name="financeCode" id="financeCode" size="20" value="${ financeCode }" onkeypress="javascript:return gosearch();" />&nbsp; 
+		${ Continent }&nbsp;
+		${ FinanceCodeToNc }&nbsp;
+		<input type="checkbox" value="${ financeEmpName }" onclick="setFinanceEmpName(this)" id="financeEmpName" name="financeEmpName" />财务本人团
+		<br />
+		${ BusinessType }&nbsp;
+		${ ExtendService }&nbsp;
+		${ IsLockIncome }&nbsp;
+		${ IsFinal }&nbsp;
+		${ IsStat }&nbsp; 
+		${ SettleType }&nbsp;
+		${ AccountingType }&nbsp;
+		
+		
+		服务开始日期<input type="text" class="Wdate" onClick="WdatePicker()" id="dataStart" name="dataStart" value="${dataStart }"/>至
+		<input type="text" class="Wdate" onClick="WdatePicker()" id="dataFinish" name="dataFinish" value="${dataFinish }"/>
+		服务结束日期<input type="text" class="Wdate" onClick="WdatePicker()" id="finishStart" name="finishStart" value="${ finishStart }"/>至
+		<input type="text" class="Wdate" onClick="WdatePicker()" id="finishEnd" name="finishEnd" value="${ finishEnd }"/>
+		<input type="hidden" value="${ EmpNames }" id="empNames"/>
+		<input type="submit" class="btn_search" name="btnSearch" id="btnSearch" value="开始查询">
+		<input type="button" class="btn_searchAll" name="btnSearchAll" id="btnSearchAll" onclick="searchAll('frmSearch')" value="全部">
+		<input type="hidden" value="1" name="isFirst"/>
+	</form>

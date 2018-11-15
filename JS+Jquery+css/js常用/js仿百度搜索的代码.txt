@@ -1,0 +1,300 @@
+ ajax的应用在当今web项目上，到处都是最常见也用的最多的地方就应该是登录、表单和搜索提示了。今天分享下自己用到的搜索下拉提示。
+
+       第一步，是前台展示的时候：
+
+?
+1
+2
+3
+4
+5 //输入框 
+<input type="text" id="textword" onkeyup="showtip(event,this);" onkeydown="regword(this);" onclick="showtip(event,this);event.cancelBubble = true;event.returnValue = false;" /> 
+<input type="button" id="btnsearch" /> 
+//提示列表容器 
+<ul id="sosotip" onclick="hiddtip()"></ul>  
+?
+1 第二步，是后台发回的数据格式： 
+?
+1
+2
+3 <li id="litooltip1" onmouseover="mousestyle(this,1)" onclick="redirect(‘提示词1’)"><label>提示词1</label><span>共被搜索10次</span></li> 
+<li id="litooltip2" onmouseover="mousestyle(this,2)" onclick="redirect(‘提示词2’)"><label>提示词2</label><span>共被搜索6次</span></li> 
+<li id="litooltip3" onmouseover="mousestyle(this,3)" onclick="redirect(‘提示词3’)"><label>提示词3</label><span>共被搜索2次</span></li> 
+      服务器端直接传回的是组织好的html代码，这样的话，会使传输时数据膨胀，但这样的话，把比较的复杂的处理都放到的服务器一端，实现起来更方便和简单。另外，至于样式的定位和显示，这里就不贴出来了，全凭自己兴趣，想怎么显示自己看着办。
+
+ 
+
+      下面，就是重点，js代码了：
+
+?
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135 //   隐藏提示框 
+function hiddtip(){var tipul = document.getElementById("sosotip");tipul.style.display="none";} 
+//   键盘上下操作自动改变输入框的值 
+function autotext(strtext){document.getElementById("textword").value=strtext;} 
+//   点击页面其它部分时隐藏提示框 
+document.body.onclick=function(){hiddtip();}; 
+  
+  
+var preword="";    //   记录键盘操作按下时的文本框值 
+var current=0;     //   现在选择的提示列表的第几项 
+var staticword="";  //  记录键盘操作按下时的文本框值，忽略上下键的操作 
+  
+//   onkeydown触发时，记录此时记录文本框的值（以便onkeyup时文本框的值比较决定是否请求服务器） 
+function regword(target)    
+{ 
+   var tempword = target.value.replace(/\s/g,""); 
+   if(tempword != "") 
+   { 
+      preword=tempword; 
+   }  
+} 
+  
+//  显示提示列表，文本框onkeyup和onclick时触发 
+function showtip(oEvent,target) 
+{ 
+  var sword = target.value.replace(/\s/g,"");    // 此时文本框的值 
+  var ulcontainer = document.getElementById("sosotip"); //提示列表容器  
+  if(sword == "") 
+  { 
+      ulcontainer.style.display="none";   //  文本框值为空时，隐藏提示 
+  }   
+  else if(sword.length <20) 
+  { 
+     if(sword != preword)               // 操作后，文本框值改变 
+     {   
+        current=0; 
+        preword = sword; 
+        if(oEvent.keyCode!="38" || oEvent.keyCode!="40") 
+        { 
+          staticword= preword; 
+        } 
+        ulcontainer.style.display="none";   
+        ulcontainer.innerHTML =""; 
+             $.ajax({                               //  请求 
+                 type:"GET", 
+                 url:"Ashx/searchtip.ashx", 
+                 data:{word:sword }, 
+                 success:function(result) 
+                 { 
+                     if(result != "0") 
+                     { 
+                        ulcontainer.innerHTML = result; 
+                        ulcontainer.style.display="block";  
+                     } 
+                 } 
+             }); 
+       } 
+       else if(ulcontainer.innerHTML != "")//操作后文本框词未变 
+       { 
+           ulcontainer.style.display="block";  
+           clearallstyle();     //   清除提示列表上的所有样式 
+           if(oEvent.keyCode=="38")    //   是键盘上的向上操作时 
+           { 
+               current--; 
+               if(current == -1)   //达到列表最上方时选中最后一个 
+               { 
+                  var uls = document.getElementById("sosotip"); 
+                  var ochilds = uls.childNodes; 
+                  current = ochilds.length; 
+                  addlistyle(oEvent,ochilds[current-1]); //选中最后一个 
+                } 
+                else 
+                { 
+           var fotar = document.getElementById("litooltip"+current); 
+                    if(fotar != null) 
+                    { 
+                       addlistyle(oEvent,fotar); 
+                    }  
+                    else      //   选中为第一个时再向上回到文本框 
+                    {  
+                      current=0; 
+                      autotext(staticword);     
+                    } 
+                 }  
+            } 
+            else if(oEvent.keyCode=="40")   //   是键盘上的向下操作时 
+            { 
+               current++; 
+          var fotar = document.getElementById("litooltip"+current); 
+               if(fotar != null) 
+               { 
+                  addlistyle(oEvent,fotar); 
+               }  
+               else       //到第一个时回到文本框 
+               { 
+                       current=0;autotext(staticword); 
+               } 
+            } 
+            else if(oEvent.keyCode=="13")   //  Enter键时,触发按钮 
+            { 
+               document.getElementById("btnsearch ").click(); 
+            } 
+        } 
+    } 
+} 
+//   键盘上下时为选中的项加选中样式 
+function addlistyle(oEvent,target) 
+{ 
+   target.style.cssText="background-color:#36C;color:#fff;"; 
+   autotext(target.childNodes[0].innerHTML); 
+   oEvent.cancelBubble = true;oEvent.returnValue = false;  
+} 
+  
+//   鼠标与键盘的交互，鼠标选中时按上下键可以按鼠标选中的当前上下 
+function mousestyle(target,currflag) 
+{ 
+   clearallstyle(); 
+   target.style.cssText="background-color:#36C;cursor:pointer;color:#fff;";  
+   current = currflag; 
+} 
+// 清除提示的选中样式 
+function clearallstyle() 
+{ 
+     var uls = document.getElementById("sosotip"); 
+     var ochilds = uls.childNodes; 
+     for(var i=0;i<ochilds.length;i++) 
+     { 
+         ochilds[i].style.cssText=""; 
+     } 
+} 
+//  鼠标点击某一项时触发 
+function redirect(word) 
+{  
+  location.href="search.aspx?w="+encodeURI(word); 
+} 
+     其中ajax的请求用的是jquery。
+

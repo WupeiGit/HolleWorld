@@ -1,0 +1,9 @@
+//选择行样式
+function selectThisLine(obj){
+	if(this.pObj != undefined) this.pObj.className = this.pObjStyle;
+	this.pObj = obj;
+	this.pObjStyle = obj.className;
+	//this.objId = obj.firstChild.childNodes[0].value;
+	obj.firstChild.childNodes[0].checked = true;
+	obj.className = "listSelectedS6";
+}

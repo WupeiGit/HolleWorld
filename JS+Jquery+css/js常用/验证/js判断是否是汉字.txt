@@ -1,0 +1,4 @@
+if((/[\u4e00-\u9fa5]+/).test(内容)){      
+			$('msgFlase').update('商品编码只能是数字或者字母！');
+			$('commodityCode').value ="";
+		}

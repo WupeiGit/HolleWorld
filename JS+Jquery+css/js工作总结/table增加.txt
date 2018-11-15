@@ -1,0 +1,166 @@
+ <tr>
+              	<td><%=Trim(rs("flightNo"))%></td>
+                <td><%=Trim(rs("dayNum"))%></td>
+                <td>起点：<%=Trim(rs("startPoint"))%><br/>终点：<%=Trim(rs("endPoint"))%></td>
+                <td>起航时间：<%=Trim(rs("startTime"))%><br/>到达时间：<%=Trim(rs("endTime"))%></td>
+                <td><%=GetFightIsNightStatus(Trim(rs("isNight")))%></td>
+                <td>
+                	<input type="hidden" name="flightId" id="flightId" value="<%=Trim(rs("flightId"))%>"/>
+					<a href="#" onclick="return confirm('您确定删除吗!')">删除</a>
+					<a href="flightMileageUpdate.asp?flightNo=<%=Trim(rs("flightNo"))%>&flightId=<%=Trim(rs("flightId"))%>">修改</a>
+                </td>
+              </tr>
+
+
+
+//alert("fltNo="+fltNo);
+			if(fltNo==null || fltNo==""){
+				alert("请检查【航班段号】填写！"); 
+				return false;
+			}
+			
+			//alert("dayNum="+dayNum);
+			if(dayNum==null || dayNum==""){
+				alert("请检查【第几天】填写！"); 
+				return false;
+			}
+			
+			//alert(sPoint);
+			if(sPoint==null || sPoint==""){
+				alert("请填写【起点】填写！");
+				return false;
+			}
+			
+			if(sTime==null || sTime==""){
+				alert("请选择【起飞时间】！");
+				return false;
+			}
+			
+			if(ePoint==null || ePoint==""){
+				alert("请检查【终点】填写！");
+				return false;
+			}
+			
+			//alert(eTime);
+			if(eTime==null || eTime=="")
+			{
+				alert("请选择【到达时间】！");
+				return false;
+			}
+
+	for(var i=0; i< tdNum; i++){
+			alert("i="+i);
+			var fltNo		=	document.getElementsByName("flightNo")[i].value;
+			//alert("fltNo="+fltNo);
+			if(fltNo==null || fltNo==""){
+				alert("请检查【航班段号】填写！"); 
+				return false;
+			}
+			var dayNum		=	document.getElementsByName("dayNum")[i].value;
+			//alert("dayNum="+dayNum);
+			if(dayNum==null || dayNum==""){
+				alert("请检查【第几天】填写！"); 
+				return false;
+			}
+			var sPoint		=	document.getElementsByName("startPoint")[i].value;
+			//alert(sPoint);
+			if(sPoint==null || sPoint==""){
+				alert("请填写【起点】填写！");
+				return false;
+			}
+			var sTime		=	document.getElementsByName("startTime")[i].value;
+			if(sTime==null || sTime==""){
+				alert("请选择【起飞时间】！");
+				return false;
+			}
+			var ePoint		=	document.getElementsByName("endPoint")[i].value;
+			if(ePoint==null || ePoint==""){
+				alert("请检查【终点】填写！");
+				return false;
+			}
+			var eTime		=	document.getElementsByName("leaveTime")[i].value;
+			//alert(eTime);
+			if(eTime==null || eTime=="")
+			{
+				alert("请选择【到达时间】！");
+				return false;
+			}
+		}
+
+
+
+
+
+	for(var i=0;i<= fltNo.length;i++){
+			var dayNum		=	document.getElementsByName("dayNum")[i].value;
+			var sPoint		=	document.getElementsByName("startPoint")[i].value;
+			var sTime		=	document.getElementsByName("startTime")[i].value;
+			var ePoint		=	document.getElementsByName("endPoint")[i].value;
+			var eTime		=	document.getElementsByName("endTime")[i].value;
+			if(dayNum==null || dayNum=="")
+			{
+				alert("请检查【第几天】填写是否完整！");
+			}
+			if(sPoint==null || sPoint=="")
+			{
+				alert("请填写【起点】填写是否完整！");
+			}
+			if(sTime==null || sTime=="")
+			{
+				alert("请检查【起飞时间】！");
+			}
+			if(ePoint==null || ePoint=="")
+			{
+				alert("请检查【终点】填写是否完整！");
+			}
+			if(eTime==null|| eTime=="")
+			{
+				alert("请检查【到达时间】填写是否完整！");
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
+   <tr>
+                                <td>*航班号</td>
+                                <td><input name="flightNo" id="flightNo" type="text"/></td>
+                                <td>*第几天</td>
+                                <td><input name="dayNum" id="dayNum" type="text"/></td>
+                            </tr>
+                            <tr>
+                                <td>*起点</td>
+                                <td><input name="startPoint" id="startPoint" type="text"/></td>
+                                <td>*起飞时间</td>
+                            <td>
+                                <input type="text" name="leaveTime" id="leaveTime" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>
+                                <label><%=CreateSltByTimeHour("leaveOnHour", "10", "", "", "")%> 时</label>
+                                <label><%=CreateSltByTimeMinute("leaveOnMinute", "00", "", "", "")%> 分</label>
+                                <label><%=CreateSltByTimeMinute("leaveOnSecond", "00", "", "", "")%> 秒</label>
+                            </td>
+                            </tr>
+                            <tr>
+                                <td>*到达</td>
+                                <td><input name="endPoint" id="endPoint" type="text"/></td>
+                                <td>*到达时间	</td>
+                            <td>
+                                <input type="text" name="returnTime" id="returnTime" onclick="return showCalendarByEl(this);"  size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>
+                                <label><%=CreateSltByTimeHour("returnOnHour", "10", "", "", "")%> 时</label>
+                                <label><%=CreateSltByTimeMinute("returnOnMinute", "00", "", "", "")%> 分</label>
+                                <label><%=CreateSltByTimeMinute("returnOnSecond", "00", "", "", "")%> 秒</label>
+                            </td>
+                            </tr>
+                            <tr>
+                                <td>*是否过夜</td>
+                                <td>是<input name="night" id="IsNight" type="radio" checked="checked" value="1"/>&nbsp;
+                                否<input name="night" id="NoNight" type="radio" value="0"/></td>
+                                <td> <input name="hdFltId" id="hdFltId" type="hidden" value="<%'=airId%>"/></td>
+                                <td> <input name="hdDayNum" id="hdDayNum" type="hidden" value="<%'=dayNum%>"/></td>
+                           </tr>

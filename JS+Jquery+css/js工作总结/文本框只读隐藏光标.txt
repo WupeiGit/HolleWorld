@@ -1,0 +1,5 @@
+1.只读readonly="readonly"
+2.失去光标 onfocus="this.blur()"只兼容谷歌浏览器
+
+
+举例：<input type="text" name="vatTaxRate" id="vatTaxRate<s:property value="#bcd.count" />" readonly="readonly" onfocus="this.blur()" onclick="cancelBubble(event);"/>

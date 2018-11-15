@@ -1,0 +1,7 @@
+/[^\- \d.]/g 可以是负数的数值
+/(\.\d{2})\d*$/,'\$1') 自动保留两位小数
+<input type="text" id="factPrice" onkeyup="this.value=this.value.replace(/[^\- \d.]/g,'')" 
+onblur="sumMoneyRmbValue();this.value=this.value.replace(/(\.\d{2})\d*$/,'\$1')" />
+
+//自动保留两位小数
+XXXX.toFixed(2);

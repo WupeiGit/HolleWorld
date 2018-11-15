@@ -1,0 +1,204 @@
+1. 当select输入框中每输入一点内容的时候，在option中找出与内容匹配的选项显示在option的前面选项中。
+
+    2. 如何获取每次输入的内容，当keyup的时候触发函数。
+
+    问题：select标签中可以输入内容吗？(解决：另一篇文章可选择和输入的下拉列表框 )
+
+    3. 如何获得输入框中的内容？(解决，在输入框上添加onkeyup时间触发的函数用js获得)
+
+    4. 如何匹配？（解决）
+
+    4.1 如何获得所有option中的内容？(解决)
+
+    复制代码代码如下:
+
+    function getSelectText()
+
+    {
+
+    //获得所有select标签
+
+    var bject = document.getElementsByTagName('select');
+
+    //因为该html中只有一个select标签，所以就是name = "aabb"代表的标签
+
+    var bj = object[0];
+
+    //alert(obj.length);
+
+    //alert(obj[0]);
+
+    //保存所有option 的值
+
+    var allText;
+
+    for(i=0;i
+
+    {
+
+    allText += obj[i].innerText+','; //关键是通过option对象的innerText属性获取到选项文本
+
+    }
+
+    return allText;
+
+    }
+
+    4.2 js分割字符串？（解决）
+
+    复制代码代码如下:
+
+    var allText = getSelectText();
+
+    //alert(allText);
+
+    // 每个option的内容分割开来
+
+    var eachOptin = new Array();
+
+    eachOptin=allText.split(","); //字符分割
+
+    4.3 如何在js中匹配？
+
+    复制代码代码如下:
+
+    //如果option内容中有输入的内容就返回第一次匹配的位置（大于等于0），如果没有匹配的就返回-1
+
+    var flag = eachOptin[i].indexOf(shuru) ;
+
+    5. 如何让匹配的内容显示在option的前面的选项？（通过改变option的index编号）（ 解决）
+
+    方法：当查到匹配的选项的时候，将第一个option重新新增到select最后，然后，将第一个的值重置为匹配的option的值，然后删掉原始匹配的option
+
+    7. js 实现select标签右边三角的功能（未解决，当搜索之后，直接显示所有option选项可供选择）
+
+    8.在匹配的option选项有多个的时候出现bedug,注意测试，和重新修改一下，应该是上面第五条中的逻辑问题
+
+    代码如下：
+
+    复制代码代码如下:
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    function onku()
+
+    {
+
+    //获得input输入框的内容
+
+    var shuru = document.getElementById('ccdd').value;
+
+    var bject = document.getElementsByTagName('select');
+
+    var bj = object[0];
+
+    //如果输入的内容为空，所有的选项都匹配
+
+    if(shuru!= '')
+
+    {
+
+    //alert(shuru);
+
+    //获得option中的所有内容
+
+    var allText = getSelectText();
+
+    //alert(allText);
+
+    // 每个option的内容分割开来
+
+    var eachOptin = new Array();
+
+    eachOptin=allText.split(","); //字符分割
+
+    var f = 1;
+
+    for (i=1;i
+
+    {
+
+    //alert(eachOptin[i]);
+
+    //如果option内容中有输入的内容就返回第一次匹配的位置（大于等于0），如果没有匹配的就返回-1
+
+    var flag = eachOptin[i].indexOf(shuru) ;
+
+    if(flag >=0)
+
+    {
+
+    //alert(i);
+
+    //将index为f的option重新新增一遍，显示在最后
+
+    obj.options.add(new Option(obj[i].innerText,obj[f].value));
+
+    //将编号为f的option重新赋值，赋值为符合条件的第一个option
+
+    obj.options[f]=new Option(eachOptin[i],eachOptin[i]);
+
+    //删除最初存在的符合条件的option
+
+    obj.remove(i);
+
+    f++;
+
+    }
+
+    }
+
+    }
+
+    }
+
+    function getSelectText()
+
+    {
+
+    //获得所有select标签
+
+    var bject = document.getElementsByTagName('select');
+
+    //因为该html中只有一个select标签，所以就是name = "aabb"代表的标签
+
+    var bj = object[0];
+
+    //alert(obj.length);
+
+    //alert(obj[0]);
+
+    //保存所有option 的值
+
+    var allText;
+
+    for(i=0;i
+
+    {
+
+    //alert(obj[i].index);//获得option的index编号
+
+    //alert(obj[i].value);//获得option的value的值
+
+    allText+= obj[i].innerText+','; //关键是通过option对象的innerText属性获取到选项文本
+
+    }
+
+    return allText;
+
+    }
+
+    
+
+    
+

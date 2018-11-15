@@ -1,0 +1,225 @@
+
+....................................................Js.........................................................
+var iCnt = 0;
+
+var FltMlg = {
+	AddFltMlgTab : function(num){
+		
+		var clonedivfirst = $('divfirst').cloneNode(true);
+		var objTBody = document.createElement("tbody");
+    	
+		clonedivfirst.style.display = "";
+		++iCnt;										//计时器加1
+		objTBody.appendChild(clonedivfirst);		//添加一个tbody
+	
+		$("tabSignUpInfo").appendChild(objTBody);
+        $("btnSub").disabled = false;
+		
+		if(parseInt(iCnt) == 0){
+			$("btnSub").disabled = true;//禁用
+		}else if(parseInt(iCnt)  < num-1 && parseInt(iCnt)  > 0){
+			$("btnAdd").disabled = false;//启用
+			$("btnSub").disabled = false;
+		}else if(parseInt(iCnt)  == num-1){
+			$("btnAdd").disabled = true;
+		}
+	
+	},
+	CutFltMlgTab : function(num){
+		if(window.confirm("您确定要删除一行吗？")){
+			var objTab = $("tabSignUpInfo");
+			objTab.removeChild(objTab.childNodes[--iCnt + 1]);
+			if(parseInt(iCnt) == 0){
+				$("btnSub").disabled = true;//禁用
+			}else if(parseInt(iCnt)  < num-1 && parseInt(iCnt)  > 0){
+				$("btnAdd").disabled = false;//启用
+				$("btnSub").disabled = false;
+			}else if(parseInt(iCnt)  == num-1){
+				$("btnAdd").disabled = true;
+			}
+		}
+	}	
+}
+	
+
+...........................................................asp页面..................................................
+  <table width="100%" border="0" cellpadding="3" cellspacing="1" class="tabStyle16">
+                <tr>
+                    <th colspan="10">确定添加-机票资源航段表</th>
+                </tr>
+                <tr>
+                    <td width="10%"> 多航段操作</td>
+                    <td><input name="btnAdd" type="button" class="btn_bg_style01_50" onClick="FltMlg.AddFltMlgTab(<%=dayNum%>);" value="增加行"/>
+						<input name="btnSub" type="button" disabled="disabled" class="btn_bg_style01_50" onClick="FltMlg.CutFltMlgTab(<%=dayNum%>);" value="减少行" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding:5px">
+                    	<table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16" id="tabSignUpInfo">
+                        	 <tbody id="tTabSignUpInfo">
+                                <tr id="divfirst" style="display:block">
+                                    <td>
+                                        <table width="100%" border="0" cellpadding="2" cellspacing="1" class="tabStyle16">
+                                            <tr>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 航班号：</td>
+                                                <td width="40%"><input type="text" name="flightNo" id="flightNo" size="20"/></td>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 第几天：</td>
+                                                <td><input type="text" name="dayNum" id="dayNum" size="20"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 起点：</td>
+                                                <td width="40%"><input type="text" name="startPoint" id="startPoint'+i" size="20"/></td>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 起飞时间：</td>
+                                                <td><input type="text" name="startTime'+i" id="startTime" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>
+                                                    <label><%=CreateSltByTimeHour("leaveOnHour", "10", "", "", "")%> 时</label>
+                                                    <label><%=CreateSltByTimeMinute("leaveOnMinute", "00", "", "", "")%> 分</label>
+                                                    <label><%=CreateSltByTimeMinute("leaveOnSecond", "00", "", "", "")%> 秒</label>
+                                            </tr>
+                                            <tr>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 终点：</td>
+                                                <td width="40%"><input type="text" name="endPoint" id="endPoint" size="20"/></td>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 达到时间：</td>
+                                                <td><input type="text" name="leaveTime'+i" id="leaveTime" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="cur_hand" /><label>&nbsp;</label>
+                                                	<label><%=CreateSltByTimeHour("returnOnHour", "10", "", "", "")%> 时</label>
+                                                    <label><%=CreateSltByTimeMinute("returnOnMinute", "00", "", "", "")%> 分</label>
+                                                    <label><%=CreateSltByTimeMinute("returnOnSecond", "00", "", "", "")%> 秒</label>
+                                            </tr>
+                                            <tr>
+                                                <td width="10%" align="right"><span class="font_red">*</span> 是否过夜：</td>
+                                                <td colspan="3"><input type="radio" name="isNight" id="isNight" value="1"/>是&nbsp;&nbsp; <input type="radio" name="isNight" id="isNight" value="0"/>否</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                        	</tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                	<td>&nbsp;</td>
+               		<td><input type="submit" name="sbmitAddFM" id="sbmitAddFM" class="btn_bg_style04_50" value="提交"/>
+                    	<input type="reset" class="btn_bg_style02_50" value="重置" />
+                    	<input type="button" name="btnCanl" id="btnCanl" class="btn_bg_style02_50" value="取消"/>
+                    </td>
+                </tr>
+            </table>          
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+王宏涛  8950(王宏涛) 17:15:03
+function subtract(num){
+	//if(window.confirm("您确定要删除一行吗？")){
+			//--iCnt;
+		var objTab = $("tabSignUpInfo");
+		objTab.removeChild(objTab.childNodes[--iCnt + 1]);
+		if(iCnt == 0) {
+			$("btnSub").disabled = true;
+			$("btnSub1").disabled = true;
+			//$("btnSubmit").disabled = true;
+			$("btnSubmit1").disabled = true;
+		}
+		if(iCnt < 9){
+			$("btnAdd").disabled = false;
+			$("btnAdd1").disabled = false;
+		}
+	//}
+}
+王宏涛  8950(王宏涛) 17:15:22
+var iCnt = 0;
+var divId = 'divfirst'
+function Add(num){
+	//++iCnt;
+	var clonedivfirst = $(divId).cloneNode(true);
+	//alert(clonedivfirst.innerHTML);
+	clonedivfirst.childNodes[0].innerHTML = ++iCnt;
+	var objTBody = document.createElement("tbody");
+	clonedivfirst.style.display = "";
+	objTBody.appendChild(clonedivfirst);
+	
+	//alert(objTBody.innerHTML);
+	$("tabSignUpInfo").appendChild(objTBody);
+	$("btnSub").disabled = false;
+	$("btnSub1").disabled = false;
+
+	if(iCnt >= 9 || num <= iCnt){
+		if(num == 1){
+			$("btnAdd").disabled = true;
+			$("btnAdd1").disabled = true;
+			//$("btnSubmit").disabled = false;
+			$("btnSubmit1").disabled = false;
+		}
+		else{
+			$("btnAdd").disabled = true;
+			$("btnAdd1").disabled = true;
+		}
+	}else{
+		$("btnAdd").disabled = false;
+		$("btnAdd1").disabled = false;
+		//$("btnSubmit").disabled = false;
+		$("btnSubmit1").disabled = false;
+	}	
+}
+王宏涛  8950(王宏涛) 17:16:53
+<input name="btnAdd" type="button" class="btn_bg_style01_50" onClick="Add(<%=freeNum%>);" value="增加行"<%If freeNum <= 0 Then Response.Write(" disabled")%> />
+							<input name="btnSub" type="button" disabled="disabled" class="btn_bg_style01_50" onClick="subtract(<%=freeNum%>);" value="减少行" /><label id="surplusPointMes"></label> &nbsp; <span class="font_red">注：</span>
+							<span class="font_gray">报名“澳、新”线路相关团队的客人需填写“联运城市”，其他线路无需填写；报名最多人数9人；未知客人详细信息需占位时，请按<a href="/web/info/noticeDetail.asp?id=920" target="_blank" title="分销报名规则须知">《分销报名规则》</a>填写占位信息。</span>
+							<table width="100%" border="0" align="center" cellpadding="0" cellspacing="1" class="tabStyleAgentNormal" id="tabSignUpInfo">
+								<tbody id="tTabSignUpInfo">
+									<tr>
+										<th width="3%">序号</th>
+										<th width="10%">客人姓名 <span class="font_gray">（* 必填）</span></th>
+										<th width="6%">性别</th>
+										<th width="13%" style="display:none">证件类型</th>
+										<th width="13%" style="display:none">证件号码</th>
+										<th width="10%">报名金额(&yen;) <span class="font_gray">（* 必填）</span></th>
+										<th width="7%">定金(&yen;)</th>
+										<th width="5%" <%If Session("isOpenPoint") <> 1 Then %> style="display:none;" <%End If%>>使用U币</th>
+										<th width="7%">联运城市</th>
+										<th width="8%">备注</th>
+										<%If page_isOpenMember Then%>
+										<th width="10%">大客户来源</th>
+										<th width="11%">客户</th>
+										<%End If%>
+									</tr>
+									<tr id="divfirst" style="display:none">
+										<td>1</td>
+										<td class="font_gray">
+											<input type="text" name="custName" id="custName" onBlur="toFindInfo(this,'<%=teamID%>');" size="12" /> *</td>
+										<td><select name="sex">
+												<option selected="selected"></option>
+												<option value="男">男</option>
+												<option value="女">女</option>
+											</select></td>
+										<td class="font_gray">
+								       <%Response.Write("<input name=""stepUpMoney"" type=""text"" value="""& price &""" size=""8"" />")
+										 Response.Write("<input name=""stepUpMoneyOld"" type=""hidden"" size=""8"" value="""& GuangGaoJia &""" />")%>
+*</td>
+										 
+										<td><input type="text" name="rakeOffMoney" id="rakeOffMoney" value="<%=deposit%>" size="6" maxlength="5" readonly="readonly" />
+											<input type="hidden" name="limitPoints" id="limitPoints" value="<%=(price-deposit)%>" />
+										</td>
+										<td <%If Session("isOpenPoint") <> 1 Then %> style="display:none;" <%End If%>>
+										<% If session("levelNum") = 0 then %>
+											<input type="text" name="points" size="6" value="0" readonly="readonly" onBlur="toCount(<%=agentPointEnable%>);" />
+										<% Else %>
+											<input type="text" name="points" size="6" value="0" onBlur="toCount(<%=agentPointEnable%>);" />																				
+										<% End If %>
+										</td>
+										<td><input name="transportAir" type="text" size="6" /></td>
+										<td><input type="text" name="note" id="note" maxlength="100" size="10" /></td>
+										
+										<%If page_isOpenMember Then%>
+										
+王宏涛  8950(王宏涛) 17:17:32
+	<%If page_isOpenMember Then%>
+											<td><%=CreateSltCustomerBySource("deptName", "", "onchange", "getLxsList(this);")%></td>
+											<td><select name="agent"><option value="">请选择</option></select></td>
+										<%Else%>
+										
+										<td style="display:none"><%=CreateSltCustomerBySource("deptName", "", "onchange", "getLxsList(this);")%></td>
+										<td style="display:none"><select name="agent"><option value="">请选择</option></select></td>
+										<%End If%>
+									</tr>
+								</tbody>
+							</table>
+王宏涛  8950(王宏涛) 18:19:36
+parseInt

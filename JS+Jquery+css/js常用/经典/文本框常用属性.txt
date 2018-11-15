@@ -1,0 +1,6 @@
+1.输入值历史记录清空
+autocomplete="off"
+
+2.只读readonly="readonly"
+
+3. onblur="this.focus();" 失去焦点,,onfocus="this.blur()"

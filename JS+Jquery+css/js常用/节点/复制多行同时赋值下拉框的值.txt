@@ -1,0 +1,16 @@
+	addRow : function(rows) {
+		if (rows == null) rows = 1;
+		for ( var i = 0; i < rows; i++) {
+			for(var num = 1; num < 5; num++){
+				var rowElements = Row.getRowElements();
+				var frameRowElement = rowElements.rows[num];
+				var selects = frameRowElement.getElementsByTagName('select');
+				var newRow = frameRowElement.cloneNode(true);
+				rowElements.appendChild(newRow);
+				var newSelects = newRow.getElementsByTagName('select');
+				for ( var j = 0; j < newSelects.length; j++){
+					newSelects[j].options[selects[j].selectedIndex].selected = true;
+				}
+			}
+		}
+	}

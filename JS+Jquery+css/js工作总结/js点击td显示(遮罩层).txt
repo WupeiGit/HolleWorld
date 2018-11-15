@@ -1,0 +1,105 @@
+---------------asp页面
+<td  onclick="FlightStock.loadLogFlightStockInfo(<%=rs("skId")%>);" title="点击查看详情">
+------------------js
+//加载机票调整备注信息
+	loadLogFlightStockInfo : function(objValues){
+		var noteDiv = document.createElement('div');
+		if($('loadTeamNoteInfo') != null){
+			document.body.removeChild($('loadTeamNoteInfo'));
+		}
+		noteDiv.id = 'loadTeamNoteInfo';
+		noteDiv.style.width = 'auto';
+		noteDiv.style.height = 'auto';
+		noteDiv.style.overflowY = 'auto';
+		noteDiv.style.position = 'absolute';
+		noteDiv.style.left = Event.pointerX(event) + 20;
+		noteDiv.style.top = Event.pointerY(event) - 30;
+		document.body.appendChild(noteDiv);
+		
+		var skId = objValues;
+		if(skId != '' && skId != null){
+			var url = 'loadFlightStockInfo.asp?skId='+ skId;
+			new Ajax.Request(url,{
+				onCreate : function(){ noteDiv.innerHTML = '<img src="/images/pics/loding.gif" border="0" vspace="27" />'; },
+				onComplete : function(t) {
+					if(t.responseText != ''){
+						noteDiv.innerHTML = t.responseText;
+					}else{
+						document.body.removeChild($('loadTeamNoteInfo'));
+					}
+				}
+			});
+		}
+	},
+
+	removeNoteDiv : function(){
+		if($('loadTeamNoteInfo') != null){
+			document.body.removeChild($('loadTeamNoteInfo'));
+		}
+	},
+
+---------------------------------------action
+'获取机票分配日志信息
+	Case "getFlightStockInfoAll"
+		Break(GetFlightStockInfoAll(GetSafeStr(Request("skId")))) : Call CloseConn()
+
+
+--------------------------------------dao
+'---获取当前该库存记录的日志信息
+Function GetFlightStockInfoAll(ByVal objSkId)
+	Dim rs, strSql, row
+	Dim pageMessage      : pageMessage      = ""
+
+	strSql = " select [skId], [stockType], [stockNum], [TicketSource], [spendDept], [note], [creator], [creatorName], [createTime] from log_flightStock with(nolock) "&_
+			 " where skId = "& objSkId 
+			 
+	If GetRs(rs, strSql) Then
+		For row = 1 To rs.RecordCount
+			pageMessage = pageMessage &""&_
+						"<span class=""font_gray"">日志记录：&nbsp; "& row &"</span><br />"&_
+						"<strong>[库存类型]</strong>&nbsp; "& rs("stockType") &"　　　　　　　　"&_
+						"<strong>　　[数量]</strong>&nbsp; "& rs("stockNum") &"<br />"&_
+						"<strong>[指定部门]</strong>&nbsp; "& IsVoidValue(GetFltStockListBySpendDept(rs("spendDept")),"<label class=font_gray>暂未设定</label>") &"　　　　　　　"&_
+						"<strong>　[创建人]</strong>&nbsp; "& rs("creatorName") &"<br />"&_
+						"<strong>[分配渠道]</strong>&nbsp; "& IsVoidValue(rs("TicketSource"), "<label class=font_gray>暂未设定</label>") &"　　　　　　"&_
+						"<strong>[创建时间]</strong>&nbsp; "& rs("createTime") &"<br />"&_
+						"<strong>[出库备注]</strong>&nbsp; "& rs("note") &"<br />"
+			rs.MoveNext
+			If	rs.bof or rs.eof Then Exit For
+		Next
+	Else
+		pageMessage = "<span class=""font_gray"">暂无记录···</span>"
+	End If
+	Call DestoryRs(rs)
+	
+	pageMessage = replace(pageMessage, "<br /><br />", "<br />")
+	pageMessage = replace(pageMessage, "<br />[", "[")
+	GetFlightStockInfoAll = pageMessage
+End Function
+
+----------------------------------------------------------------------
+<!--#include virtual="/inc/action/annualProjectExamAction.asp" -->
+<table border="0" cellpadding="0" cellspacing="0">
+	<tr>
+		<td style="background-image:url(/images/bg/altPanelBg01a.png);background-repeat:no-repeat;background-position:right;width:28px;height:20px;overflow:hidden;"></td>
+		<td valign="top" style="background-image:url(/images/bg/altPanelBg01e.png);width:20px;height:20px;overflow:hidden;"></td>
+		<td style="background-image:url(/images/bg/altPanelBg01b.png);width:20px;height:20px;overflow:hidden;"></td>
+	</tr>
+	<tr>
+		<td valign="top" style="background-image:url(/images/bg/altPanelBg01h.png);background-repeat:repeat-y;background-position:right;width:20px;overflow:hidden;">
+			<div style="background-image:url(/images/bg/altPanelBg01arr.png);width:28px;height:28px;"></div></td>
+		<td style="background-color:#f5ffe0;width:500px;">
+			<div class="floatR">
+				<img alt="关闭" src="/images/pics/style01/btn_close.png" border="0" style="cursor:hand;margin-bottom:-8px;" hspace="1" onclick="exam.removeNoteDiv();" />
+			</div>
+			<div style="padding:5px;line-height:18px;" id="_loadTeamNoteBody"><%=GetAnnualProjectInfo(GetSafeStr(Request("appId")),GetSafeStr(Request("empId")))%></div>
+		</td>
+		<td style="background-image:url(/images/bg/altPanelBg01f.png);width:20px;height:20px;overflow:hidden;"></td>
+	</tr>
+	<tr>
+		<td style="background-image:url(/images/bg/altPanelBg01c.png);background-repeat:no-repeat;background-position:right;width:20px;height:20px;overflow:hidden;"></td>
+		<td style="background-image:url(/images/bg/altPanelBg01g.png);width:20px;height:20px;overflow:hidden;"></td>
+		<td style="background-image:url(/images/bg/altPanelBg01d.png);width:20px;height:20px;overflow:hidden;"></td>
+	</tr>
+</table>
+<!--#include virtual="/conn/incConn.asp" -->

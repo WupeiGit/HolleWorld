@@ -1,0 +1,61 @@
+javascript实现浏览器窗口传递参数
+2014年08月18日　｜　　｜　浏览： 7 　｜　暂无评论　　
+<html>
+<head>
+    <title>主页面</title>
+    <script language=“javascript” type=“text/javascript”>  
+    function OpenNew()
+    {
+        var im=new IDAndMethod();  
+        im.ID=document.getElementById(“txtID”).value;  
+        window.showModalDialog(“ddd.html”,im,“”);  
+    }
+    function IDAndMethod()
+    {
+        this.ID=“ddd”;  
+        this.Method=SetTxt;  
+    }
+    function SetTxt(str)
+    {
+        document.getElementById(“txtID”).value=str;  
+    }
+    </script>
+</head>
+<body>
+    <form action=“#”>  
+        <input id=“txtID”  style=“width:400px” type=“text” value=“XXX！在这里输入ID!” /><br />  
+        <input type=“button” value=“打开新的窗口” onclick=“OpenNew()” />  
+    </form>
+</body>
+</html>
+
+
+b.html 
+
+
+<html>
+<head>
+    <title>主页面</title>
+    <script language=“javascript” type=“text/javascript”>  
+    var im;
+    function Load()
+    {
+        im=window.dialogArguments;
+        if(im.ID==“XXX！在这里输入ID”)  
+            document.getElementById(“txtID1″).value=“你杂不输入呢!”;  
+        else  
+            document.getElementById(“txtID1″).value=im.ID;  
+    }
+    function Set()
+    {
+        im.Method(document.getElementById(“txtID1″).value);  
+    }
+    </script>
+</head>
+<body onload=“Load()”>  
+    <form action=“#”>  
+        <input id=“txtID1″ style=“width:400px” type=“text” value=“ddd”  /><br />  
+        <input type=“button” value=“传递数据” onclick=“Set()” />  
+    </form>
+</body>
+</html>

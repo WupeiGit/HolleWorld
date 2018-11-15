@@ -1,0 +1,202 @@
+<%@ page contentType="text/html; charset=utf-8" language="java"  errorPage="/common/error.jsp" %>
+<%@ taglib uri="/struts-tags" prefix="s" %>
+<!DOCTYPE html>
+<html>
+<head>
+<s:include value="/common/basePath.jsp" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>²ÆÎñÈËÔ±¹ÜÀí</title>
+<link href="css/common.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/common/common.js"></script>
+<script type="text/javascript" src="js/common/search.js"></script>
+<script type="text/javascript" src="js/common/row.js"></script>
+<script type="text/javascript" src="js/lib/fi/common.js"></script>
+<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+	//´ò¿ª»òÕß¹Ø±Õ£¨µ±Ç°ÊÇ´ò¿ª×´Ì¬¾Í¹Ø±Õ£¬ÊÇ¹Ø±Õ×´Ì¬¾Í´ò¿ª£©
+	function openOpList(id){
+		var opEle = document.getElementById(id);
+		var opStatu = opEle.getElementsByTagName('div')[0].style.display;
+		if(opStatu == "block" || opStatu == ""){
+			opEle.style.display = "none";
+			opEle.getElementsByTagName('div')[0].style.display = "none";
+		}else{
+			opEle.style.display = "";
+			opEle.getElementsByTagName('div')[0].style.display = "block";
+		}
+	}
+	//»ñÈ¡ÎÄ±¾ÖµÓÃ·ûºÅÆ´½Ó
+	function toGetAllValuesByInput(names,splits){
+		var values = "";
+		if(names != ''){
+			var nameArr = document.getElementsByName(names);
+			for(var i= 0; i < nameArr.length; i++){
+				values = values + nameArr[i].value + splits;
+			}
+		}
+		values = values.substring(0,values.length-1);
+		return values;
+	}
+	
+	//´ò¿ª»òÕß¹Ø±ÕËùÓÐµÄ²Ù×÷ÁÐ±í
+	function toCloseOrOpenAllOpList(type){
+		var fmIds = toGetAllValuesByInput("hidFmId",",");
+		var fmIdArr = fmIds.split(',');
+		var closeAllOP = document.getElementById("closeAllOP");
+		var openAllOP = document.getElementById("openAllOP");
+		if(parseInt(type) == 0){//È«²¿¹Ø±Õ
+			for(var i=0; i < fmIdArr.length; i++){
+				closeOp("detailList"+fmIdArr[i]);
+			}
+			closeAllOP.style.display = "none";
+			openAllOP.style.display = "block";
+		}else{//È«²¿´ò¿ª
+			for(var i=0; i < fmIdArr.length; i++){
+				openOp("detailList"+fmIdArr[i]);
+			}
+			closeAllOP.style.display = "block";
+			openAllOP.style.display = "none";
+		}
+	}
+	//´ò¿ª
+	function openOp(id){
+		var opEle = document.getElementById(id);
+		var opStatu = opEle.getElementsByTagName('div')[0].style.display;
+		if(opStatu == "none" || opStatu == ""){
+			opEle.style.display = "";
+			opEle.getElementsByTagName('div')[0].style.display = "block";
+		}
+	}
+	//¹Ø±Õ
+	function closeOp(id){
+		var opEle = document.getElementById(id);
+		var opStatu = opEle.getElementsByTagName('div')[0].style.display;
+		if(opStatu == "block" || opStatu == ""){
+			opEle.style.display = "none";
+			opEle.getElementsByTagName('div')[0].style.display = "none";
+		}
+	}
+	
+	//ÐÞ¸Ä»òÐÂÔö
+	function toAddOrUpdFinanace(fmId){
+		if(fmId == null || fmId == 0){//Ö±½ÓÐÂÔö
+			//window.location.href='web/financeCenter/financeManager/financeManagerAddOrUpd.jsp?fmId='+fmId;
+			//window.open('web/financeCenter/financeManager/financeManagerAddOrUpd.jsp?fmId='+fmId);
+			toUrl('loadFinanceManagerAddOrUpd');
+		}else{//ÐÞ¸Ä
+			toUrl('loadFinanceManagerAddOrUpd?fmId='+fmId);
+		}
+		
+	}
+	
+	//¼¶ÁªÉ¾³ý
+	function toDeleteFiManangerAndOp(fmId){
+		if(window.confirm('È·¶¨ÒªÉ¾³ý²ÆÎñÈËÔ±¼°²Ù×÷ÐÅÏ¢Âð£¿')){
+			toUrl('deleteFinanceManagerAndOp?fmId='+fmId);
+		}
+	}
+	
+	//Ö»É¾³ý²Ù×÷ÐÅÏ¢
+	function toDeleteOp(fmfId){
+		if(window.confirm('È·¶¨ÒªÉ¾³ý¸Ã²Ù×÷ÐÅÏ¢Âð£¿')){
+			//toUrl('deleteFinanceManagerOp?fmfId='+fmfId);
+			jQuery.ajax({
+				url : "${pageContext.request.contextPath}/deleteFinanceManagerOp",
+				type : "post",
+				async : false,
+				data : {
+					fmfId : fmfId,
+				},
+				success : function(r){
+					alert(r);
+					window.location.href=window.location.href;
+				},
+				error : function(r){
+					alert('É¾³ýÊ§°Ü£¬ÇëÖØÊÔ£¡');
+				}
+			});
+		}
+	}
+</script>
+</head>
+<body>
+<s:include value="/common/incBody.jsp" />
+<div class="frameTitle">²ÆÎñÈËÔ±¹ÜÀí</div>
+<div class="frameBody">
+	<form name="frmFinanceManager" id="frmFinanceManager"  action="loadFinanceManagerFieldManage" method="post">
+		Ô±¹¤ÐÕÃû£º <input type="text" id="empName" name="empName" value="${empName}" />
+		Ô±¹¤±àÂë£º <input type="text" id="empCode" name="empCode" value="${empCode}" />
+		${companySelect}
+		<input type="submit" class="btn_search" name="btnSearch" id="btnSearch" value="¿ªÊ¼²éÑ¯">
+	</form>
+	<table width="100%" cellspacing="1" cellpadding="3" class="tableNormal">
+		<tr>
+            <th width="2px" nowrap="nowrap">
+            	<div id="closeAllOP" style="display:block" title="¹Ø±ÕÈ«²¿"><img src="images/pics/minusbox.gif" border="0" align="middle" hspace="3" onclick="toCloseOrOpenAllOpList(0);"  /></div>
+                <div id="openAllOP" style="display:none" title="´ò¿ªÈ«²¿"><img src="images/pics/plusbox.gif" border="0" align="middle" hspace="3" onclick="toCloseOrOpenAllOpList(1);"  /></div>
+			</th>
+            <th>Ô±¹¤±àÂë</th>
+            <th>Ô±¹¤ÐÕÃû</th>
+            <th>²¿ÃÅ±àÂë</th>
+            <th>²¿ÃÅÃû³Æ</th>
+            <th>¹«Ë¾±àÂë</th>
+            <th>¹«Ë¾Ãû³Æ</th>
+            <th width="5%">²Ù×÷</th>
+		</tr>
+		<s:if test="#request.financeManagerList == null || #request.financeManagerList.size == 0">
+			<s:include value="/common/noDataTr.jsp" />
+		</s:if>
+		<s:else>
+			<s:iterator value="#request.financeManagerList" status="fm" id="fmList" var="fmList">
+			<tr class="hand" onclick="RowEvent.selectedLine(this);openOpList('detailList<s:property value="fmId" />');" >
+				<td nowrap="nowrap"><s:property value="#fm.count" /><input type="hidden" name="hidFmId" id="hidFmId" value="<s:property value="fmId" />" /></td>
+                <td nowrap="nowrap"><s:property value="empCode" /></td>
+                <td nowrap="nowrap"><s:property value="empName" /></td>
+                <td nowrap="nowrap"><s:property value="deptCode" /></td>
+                <td nowrap="nowrap"><s:property value="deptName" /></td>
+                <td nowrap="nowrap"><s:property value="struCode" /></td>
+                <td nowrap="nowrap"><s:property value="struName" /></td>  
+                <td nowrap="nowrap">
+                	<input type="button" name="update" id="update" value="ÐÞ¸Ä²ÆÎñ" class="btn_update" onclick="cancelBubble(event);toUrl('loadFinanaceManagerUpd?fmId=<s:property value="fmId" />');" />
+                	<input type="button" name="update" id="update" value="ÅúÁ¿¹ÜÀí²Ù×÷" class="btn_act" onclick="cancelBubble(event);toAddOrUpdFinanace(<s:property value="fmId" />);" />
+                	<input type="button" name="del" id="del" value="É¾³ý" class="btn_delete" onclick="cancelBubble(event);toDeleteFiManangerAndOp(<s:property value="fmId" />);" /></td>
+			</tr>
+			<!--======================= ÏÔÊ¾²Ù×÷ÈËÔ±ÐÅÏ¢ =========================-->
+			<tr id="detailList<s:property value="fmId"/>" nowrap="nowrap">
+                <td colspan="20"><div style="width:100%;">
+                <table width="100%" border="0" cellspacing="1" cellpadding="3" >
+                	<tr>
+                      <td width="2%" style="border-left: 0px;"></td>
+                      <td width="2%" nowrap="nowrap">ÐòºÅ</td>
+                      <td width="10%" nowrap="nowrap">²Ù×÷ÐÕÃû</td>
+					  <td width="15%" nowrap="nowrap">²Ù×÷ÈË±àÂë</td>
+					  <td width="15%" nowrap="nowrap">²Ù×÷¸ºÔð¹«Ë¾</td>
+					  <td nowrap="nowrap">×Ö¶ÎÃèÊö</td>
+					  <td width="15%">²Ù×÷</td>
+                    </tr>
+                    <s:if test="financeManagerOpList == null || financeManagerOpList == 0">
+						<s:include value="/common/noDataTr.jsp" />
+					</s:if>
+					<s:iterator value="financeManagerOpList" status="fmf">
+						<tr style="color:gray;">
+							<td style="border-left: 0px;">&nbsp;</td>
+							<td><s:property value="#fmf.count" /></td>
+							<td><s:property value="empName"/></td>
+							<td><s:property value="empCode"/></td>
+							<td title="<s:property value="struCode"/>"><s:property value="struName"/></td>
+							<td><s:property value="note"/></td>
+							<td><input type="button" name="delOp" id="delOp" class="btn_delete" value="É¾³ý" onclick="toDeleteOp(<s:property value="fmfId" />);" /></td>
+						</tr>
+					</s:iterator>
+                </table>
+                </div></td>
+             </tr>
+             </s:iterator>
+		</s:else>
+	</table>
+</div>
+<input type="button" name="btnAdd" id="btnAdd" class="btn_act" value="ÐÂÔöÈËÔ±" onclick="toAddOrUpdFinanace(0);" />
+<div class="framePage">${ pageInfo }</div>
+</body>
+</body>
+</html>

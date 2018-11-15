@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+ <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+ <title>简单的模拟类似新浪微博搜索框的效果</title>
+ <style type="text/css">
+ * { padding:0; margin:0;}
+ body { font-size:14px; }
+ #box { width:600px; margin:40px auto;}
+ #in { width:240px; height:24px; line-height:24px; border:1px solid #369; border-radius:4px; box-shadow:inset 0 0 2px #999; }
+ #suggest { display:none; position:relative; margin-top:-1px; width:240px; padding-top:1px; border:1px solid #369; border-top:0 none;
+        border-radius:4px; box-shadow:inset 0 0 2px #999; overflow:hidden; }
+ #suggest a { display:block; color:#f00; height:24px; line-height:24px; text-decoration:none; padding:0 4px;}
+ #suggest a:hover { background:#eee;}
+ #suggest a span { color#369;}
+  </style>
+  <script type="text/javascript">
+ window.onload=function(){
+ //声明一坨变量供下面使用
+ var obox=document.getElementById("box");
+ obj=document.getElementById("in");
+ osug=document.getElementById("suggest");
+ oa=osug.getElementsByTagName("span");
+      //兼容ie和火狐浏览器的方式，但是经测试发现ie678可以ie9却不行在删除的时候无法触发，网上查下说有ie9这个问题
+ obj.oninput=obj.onpropertychange=onchange;
+ function onchange(){
+  var txt=this.value;
+  var words=txt.length;
+  if(words==0){
+   osug.style.display="none";
+  }else if(words<=8){
+   osug.style.display="block";
+   for( var i=0;len=oa.length,i<len;i++){
+    oa[i].innerHTML=txt;
+   }
+  }else if(words>8){
+   osug.style.display="block";
+   var limit=txt.substring(0,8)+"...";
+   for( var i=0;len=oa.length,i<len;i++){
+    oa[i].innerHTML=limit;
+   }
+  }
+ }
+}
+function disbox(){
+   document.getElementById("suggest").style.display="none";
+  }
+</script>
+</head>
+<body>
+ <dl id="box">
+  <dt><input onblur="disbox()" type="text" name="" id="in" /></dt>
+  <dd id="suggest" >
+        <a href="###">搜“<span></span>'相关微博</a>
+        <a href="###">搜“<span></span>'相关用户</a>
+  </dd>
+ </dl>
+</body>
+</html>
+<p>查找更多代码，请访问：<a href="http://www.18sucai.com" target="_blank">18素材</a></p>

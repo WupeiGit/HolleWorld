@@ -1,0 +1,176 @@
+		var descId						= $(obj)[$(obj).selectedIndex].value;
+		var yearElmentName				= $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];		//获取年下拉节点
+		var monthElmentName				= $(obj).parentNode.parentNode.childNodes[1].getElementsByTagName('select')[0];		//获取月下拉节点
+		var itemCodeElmentName			= $(obj).parentNode.parentNode.childNodes[3].getElementsByTagName('select')[0];		//获取科目下拉节点
+		var budgetPrice					= $(obj).parentNode.parentNode.childNodes[5];
+		var budgetPrice_itemBalance 	= $(obj).parentNode.parentNode.childNodes[6];
+		var itemBalance					= $(obj).parentNode.parentNode.childNodes[7];
+
+------------------------js
+	//显示金额详情
+	getDetialValue : function(obj){
+		var descId						= $(obj)[$(obj).selectedIndex].value;
+		var yearElmentName				= $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];		//获取年下拉节点
+		var monthElmentName				= $(obj).parentNode.parentNode.childNodes[1].getElementsByTagName('select')[0];		//获取月下拉节点
+		var itemCodeElmentName			= $(obj).parentNode.parentNode.childNodes[3].getElementsByTagName('select')[0];		//获取科目下拉节点
+		//获取对应节点的值
+		var yearValue					= yearElmentName[yearElmentName.selectedIndex].value;		
+		var monthVlaue					= monthElmentName[monthElmentName.selectedIndex].value;
+		var itemCode					= itemCodeElmentName[itemCodeElmentName.selectedIndex].value;
+		
+		var budgetPrice					= $(obj).parentNode.parentNode.childNodes[5];
+		var budgetPrice_itemBalance 	= $(obj).parentNode.parentNode.childNodes[6];
+		var itemBalance					= $(obj).parentNode.parentNode.childNodes[7];
+		
+		var url							= '?action=getDetailInfo&itemCode='+itemCode+'&monthVlaue='+monthVlaue+'&yearValue='+yearValue;
+		new Ajax.Request(url,{
+			onComplete: function(t){
+				var context = t.responseText;
+				//alert(context);
+				budgetPrice.innerHTML				=	context.split(',')[0];
+				budgetPrice_itemBalance.innerHTML	=	context.split(',')[1];
+				itemBalance.innerHTML				=	context.split(',')[2];
+				
+			}
+		});		
+	},
+
+
+------------------------------action
+	Case "getBudgetDataList"
+		strSql = "select distinct itemCode,itemName from v_fiBudgetOrderYearApplyList v with(nolock) where categoryName = '" & CheckStr(Request.QueryString("categoryName")) & "'	"&_
+				 " and deptId = (select deptId from fi_empList where empId = " & Session("uid") &  " and programmeId = v.programmeId)" 
+		Break(CreateSelectPlus(conn,strSql,"itemCode","itemCode","-请选择-"," ","onchange","BtnEvent.getItemValue(this)"))	
+'		strSql = "select itemDesc,itemName from ts_items where pId =(select iId from ts_items where tmId = 8 and itemName = '"& CheckStr(Request.QueryString("categoryName")) &"' and isEnable = 1)  and isAutoCalc = 0"
+'		Break(CreateSelectPlus(conn,strSql,"","itemCode","请选择","","",""))
+
+
+
+-------------------------------html
+
+<!--#include virtual="/inc/action/fiBusinessCostAction.asp" -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>费用申请</title>
+<link href="/style/common.css" rel="stylesheet" type="text/css" />
+<link href="/style/admin.css" rel="stylesheet" type="text/css" />
+<link href="/style/calendar.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="/style/js/prototype.js"></script>
+<script type="text/javascript" src="/style/js/common.js"></script>
+<script type="text/javascript" src="/style/js/ajax.js"></script>
+<script type="text/javascript" src="/style/js/alt.js"></script>
+<script type="text/javascript" src="/style/js/Search.js"></script>
+<script type="text/javascript" src="/style/js/calendar.js"></script>
+<script type="text/javascript" src="/style/js/calendar-setup.js"></script>
+<script type="text/javascript" src="/style/js/calendar-zh.js"></script>
+<script type="text/javascript" src="/style/js/businessCost.js"></script>
+</head>
+<%
+Dim row, strSql, strSqlProgramme, rs, iPage, iPageSize, pCount, itemCount, otherKeys, pageStyle
+		 
+strSql = " select distinct categoryName,categoryName from v_fiBudgetOrderYearApplyList v with(nolock) "&_ 
+         " where deptId = (select deptId from fi_empList where empId = " & Session("uid") &  " and programmeId = v.programmeId)" 
+
+'strSql = " select itemName,itemName from ts_items where tmId = 8 and pId = 0"
+Dim categoryNameList : categoryNameList = CreateSelectPlus(conn, strSql, "", "categoryName", "选择科目类别", "", "onchange", "BtnEvent.getItemNameList(this)")
+Dim yearValueList	 : yearValueList	= CreateSelectPlus(conn, "select distinct yearValue,yearValue from bc_programme with(nolock) where 1=1", "yearValue", "yearValue", "", year(now()), "", "")
+
+'strSqlCustomer = "select distinct itemCode,itemName from v_fiBudgetOrderYearApplyList where prAudiStatus = 1 and categoryName = '" & CheckStr(Request.QueryString("categoryName")) & "' and empId = " & Session("uid")
+'CreateCheckBoxList(ByRef con,ByVal strSql,ByVal elementName,ByVal selectedItems,ByVal exceptItems,ByVal isCreateList,ByVal eventType,ByVal eventMethod)
+'strSqlProgramme = " select programmeId,pName from bc_programme "
+'Dim programmeList : programmeList = CreateSelectPlus(conn, strSqlProgramme, "", "programmeId", "选择预算方案", "", "onchange", "BtnEvent.getCategoryName(this)")
+
+%>
+<body>
+<form  name="formBusinessCostApply" action="?action=businessCostApply" method="post" onsubmit="return BtnEvent.checkAll();">
+<table width="99%" border="0" align="center" cellpadding="0" cellspacing="1" class="tabStyle6">
+<tr>
+	<th>申请费用</th>
+</tr>
+<tr>
+	<td style="padding:15px">
+			<table  width="99%"  border="0" cellpadding="3" cellspacing="1" class="tabStyle16" style="margin-bottom:10px;">
+				<tr>
+					<th colspan="30">申请单信息</th>
+				</tr>
+ 
+				<tr>
+					<td width="8%" style="text-align:right;"><span style="color:red;">*</span>&nbsp;经办人部门：</td>
+					<td width="30%"><%=CreateSltInfinityByDept(conn,"sltCompDept",0,"",Session("deptId"),"","","onchange","BtnEvent.getOneDeptEmps(this[this.selectedIndex].value)")%></td>
+					<td width="8%" style="text-align:right;">制单部门：</td>
+					<td><%=Session("deptName")%></td>
+				</tr>
+				<tr>
+					<td width="8%" style="text-align:right;"><span style="color:red;">*</span>&nbsp;经办人姓名：</td>
+					<td width="30%" id="_sltEmpList"><%=CreateSltEmpIdInManyDeptList("sltEmpId", Session("uid"), Session("deptId"), "", "", "")%></td>
+					<td width="8%" style="text-align:right;">制单人：</td>
+					<td><%=Session("userName")%></td>
+				</tr>             
+
+			</table>
+			<div class="paddingTB5px" style="left:auto">
+				<input type="button" class="btn_bg_style01_50" onclick="Row.addRow(1);" value="加1项" />
+				<input type="button" class="btn_bg_style01_50" onclick="Row.addRow(3);" value="加3项" />
+				<input type="button" class="btn_bg_style01_50" onclick="Row.addRow(5);" value="加5项" />
+				<input type="button" class="btn_bg_style02_50" onClick="Row.deleteLastRows(1);" value="删除项" />
+				<input type="button" class="btn_bg_style02_50" onClick="Row.deleteBlankRows(0);" value="删空项" />
+				<input type="button" class="btn_bg_style02_30" onClick="Row.deleteLastRows(0);" value="清空" />
+			</div>
+			<table width="99%" border="0" cellpadding="3" cellspacing="1" class="tabStyle16"  style="margin-bottom:10px;" id="rowTable">
+			<tbody id="rowElements">
+				<tr>
+                	<th width="6%">申请年度</th>
+                    <th width="6%">申请月份</th>
+					<th width="10%">费用类别</th>
+					<th width="10%">费用科目</th>
+                    <th width="10%">预算说明</th>
+					<th width="6%">累计预算总额</th>
+					<th width="6%">累计已申请</th>
+					<th width="6%">预算余额</th>
+					<th width="6%">本次申请额</th>
+					<th width="6%">是否有发票</th>
+					<th width="8%">发票时间</th>
+					<th>备注</th>
+					<th width="3%">&nbsp;</th>
+				</tr>
+				<tr>
+                	<td><%=yearValueList%></td>
+                    <td><%=CreateSltApplyMonth("applyMonth",month(now()),"","")%></td>
+					<td height="31"><%=categoryNameList%></td>
+					<td id="_itemId"><select name="itemCode"><option value="">请选择</option></select><!--<%'=itemNameList%>--></td>
+                    <td id="_monthDetailInfo"><select name="monthDetial"><option value="">请选择</option></select></td>
+					<td id="_budgetPrice" style="text-align:right"></td>
+					<td id="_budgetPrice_itemBalance" style="text-align:right" class="font_red"></td>
+					<td id="_itemBalance" style="text-align:right" class="font_green"></td>
+					<td><input type="text" name="costPrice" id="costPrice" onkeyup="BtnEvent.countSumPrice(this);" size="8"></td>
+					<td><%=CreateSltByBoolean("isBillOrNo","0","","","")%>
+					</td>
+					<td><input type="text" name="billDate" onclick="return showCalendarByEl(this);"  readonly="readonly" class="inputTextDateBg" size="10" /><label>&nbsp;</label></td>
+					<td><textarea name="costNote" rows="1" style="width:95%;" onfocus="this.rows=3;" onblur="this.rows=1;"></textarea></td>
+					<td>
+					<img src="/images/icons/02/cross.gif" border="0" class="cur_hand" onclick="Row.deleteRow(this.parentNode.parentNode);" /></td>
+				</tr>
+			</tbody>
+			</table>
+			<table width="100%" border="0" cellspacing="1" cellpadding="3" class="tabStyle16">
+				<tr>
+					<td width="15%" height="35"><strong>申请总金额</strong> (RMB)</td>
+					<td width="85%"><label type="text" id="sumPrice" class="font_bold font_bigTitle_orange">0</label> 元</td>
+				</tr>
+			</table>
+			<div class="paddingTB5px">		
+				<input type="submit" name="addBugdet" class="btn_bg_style01" value="提交" />
+				<input type="button" class="btn_bg_style02_30" onclick="toUrl('businessCostList.asp');" value="返回" />
+			</div>
+		</td>
+</tr>
+</table>
+</form>
+</body>
+</html>
+
+
+
+		

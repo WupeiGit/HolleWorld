@@ -1,0 +1,20 @@
+<script language="JavaScript"> 
+function isreadonly(){ 
+var obj = document.getElementById("username"); 
+obj.setAttribute("readOnly",true); 
+obj.style.backgroundColor="#d2d2d2"; 
+} 
+function readwrite(){ 
+var obj = document.getElementById("username"); 
+obj.setAttribute("readOnly",false); 
+obj.style.backgroundColor="#ffffff"; 
+} 
+</script> 
+<body> 
+<form name="addform" id="addform" method="post" action="" > 
+<input type="text" id="username" name="username"> 
+<input type="button" name="Ö»¶Á" value="read" onclick="isreadonly();"> 
+<input type="button" name="¿ÉÐ´" value="write" onclick="readwrite();"> 
+</form> 
+</body> 
+</html> 

@@ -1,0 +1,205 @@
+select下拉框实现自动匹配的功能  2011-02-27 20:05:06|  分类： JavaScript |  标签： |举报 |字号大
+中
+小 订阅 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script type="text/javascript" src="js/jquery-1.4.2.min.js">
+        </script>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>New Web Project</title>
+        <script type="text/javascript" language="JavaScript">
+   var highlightindex = -1;
+   var targetOption=null;
+            $(document).ready(function(){
+    var arr=[{name:"中国",value:"10"},{name:"中国1",value:"11"},{name:"中国 2",value:"12"},{name:"德国",value:"21"},{name:" 伊朗",value:"31"},{name:"美国",value:"41"}];
+    
+    var wordNodes=$(arr);
+    var textObj=$('#selectName');
+    var valueObj=$('#selectValue');
+                textObj.val('');
+                //定义一个下拉按钮层，并配置样式(位置，定位点坐标，大小，背景图片，Z轴)，追加到文本框后面
+                $DIV = $('<div></div>').css('position', 'absolute').css('left', textObj.position().left + textObj.width() - 15 + 'px').css('top', textObj.position().top + 2 + 'px').css('background', 'transparent url(images/select_button.gif) no-repeat top left').css('height', '16px').css('width', '15px').css('z-index', '100');
+                textObj.after($DIV);
+                //定义一个下拉框层，并配置样式(位置，定位点坐标，宽度，Z轴)，先将其隐藏
+                $SELECT = $('<div></div>').css('position', 'absolute').css('border', '1px solid #000000').css('left', textObj.position().left + 'px').css('top',textObj.position().top +  textObj.height() + 7 + 'px').css('width', textObj.width() + 'px').css('background','white').css('z-index', '100');
+                textObj.after($SELECT);
+                $SELECT.hide();
+                //定义五个选项层，并配置样式(宽度，Z轴一定要比下拉框层高)，添加name、value属性，加入下拉框层
+                 wordNodes.each(function() {
+     //alert(arr[i].name);
+      var wordNode = $(this);
+      //alert(wordNode.attr('name') );
+                    $OPTION = $('<div>' + wordNode.attr('name') + '</div>').attr('name', 'option').attr('value', wordNode.attr('value')).css('width', $SELECT.width()).css('z-index', $SELECT.css('z-index') + 1);
+                    $SELECT.append($OPTION);
+                });
+                //选项层的鼠标移入移出样式
+                $SELECT.mouseover(function(event){
+                    if ($(event.target).attr('name') == 'option') {
+                        //移入时背景色变深，字色变白
+      highlightindex= $SELECT.children("div").index($(event.target)) ;
+                        $(event.target).css('background-color', '#000077').css('color', 'white');
+                        $(event.target).mouseout(function(){
+                            //移出是背景色变白，字色变黑
+       highlightindex=-1;
+                            $(event.target).css('background-color', '#FFFFFF').css('color', '#000000');
+                        });
+                    }
+                });
+                //鼠标进入修改背景图位置
+                $DIV.mouseover(function(){
+                    $DIV.css('background-position', ' 0% -16px');
+                });
+                //鼠标移出修改背景图位置
+                $DIV.mouseout(function(){
+                    $DIV.css('background-position', ' 0% -0px');
+                });
+                //鼠标按下修改背景图位置
+                $DIV.mousedown(function(){
+                    $DIV.css('background-position', ' 0% -32px');
+                });
+                //鼠标释放修改背景图位置
+                $DIV.mouseup(function(){
+                    $DIV.css('background-position', ' 0% -16px');
+                    $SELECT.show();
+                });
+                //通过点击位置，判断弹出的显示
+                $(document).mouseup(function(event){
+                    //如果是下拉按钮层或下拉框层，则依然显示下拉框层
+                    if (event.target == $SELECT.get(0) || event.target == $DIV.get(0)) {
+                        $SELECT.show();
+                    }
+                    else {
+                        //如果是选项层，则改变文本框的值
+                        if ($(event.target).attr('name') == 'option') {
+                            //弹出value观察
+                          //  alert($(event.target).attr('value'));
+                            textObj.val($(event.target).html());
+       valueObj.attr('value',$(event.target).attr('value'));
+       $SELECT.hide();
+                        }
+                        //如果是其他位置，则将下拉框层
+                        if ($SELECT.css('display') == 'block') {
+                           // $SELECT.hide();
+                        }
+                    }
+                });
+    
+     //给文本框添加键盘按下并弹起的事件
+    $(document).keyup(function(event) {
+     //处理文本框中的键盘事件
+     
+     var myEvent = event || window.event;
+    
+     if( event.target== $SELECT.get(0)||event.target==$DIV.get(0)||event.target==textObj.get(0) ){  
+      
+       //alert("true");
+      var keyCode = myEvent.keyCode;
+      //alert(keyCode);
+      //如果输入的是字母，应该将文本框中最新的信息发送给服务器
+      //如果输入的是退格键或删除键，也应该将文本框中的最新信息发送给服务器
+      if (keyCode == 38 || keyCode == 40) {
+       //如果输入的是向上38向下40按键
+       if (keyCode == 38) {
+        //向上
+        var autoNodes = $SELECT.children("div")
+        if (highlightindex != -1) {
+         //如果原来存在高亮节点，则将背景色改称白色
+         autoNodes.eq(highlightindex).css('background-color', '#FFFFFF').css('color', '#000000');
+         highlightindex--;
+        } else {
+         highlightindex = autoNodes.length - 1;    
+        }
+        if (highlightindex == -1) {
+         //如果修改索引值以后index变成-1，则将索引值指向最后一个元素
+         highlightindex = autoNodes.length - 1;
+        }
+        //让现在高亮的内容变成红色
+        autoNodes.eq(highlightindex).css('background-color', '#000077').css('color', 'white');
+       }
+       if (keyCode == 40) {
+        //向下
+        var autoNodes = $SELECT.children("div")
+        if (highlightindex != -1) {
+         //如果原来存在高亮节点，则将背景色改称白色
+         autoNodes.eq(highlightindex).css('background-color', '#FFFFFF').css('color', '#000000');
+        }
+        highlightindex++;
+        if (highlightindex == autoNodes.length) {
+         //如果修改索引值以后index变成-1，则将索引值指向最后一个元素
+         highlightindex = 0;
+        }
+        //让现在高亮的内容变成红色
+        autoNodes.eq(highlightindex).css('background-color', '#000077').css('color', 'white');
+       }
+      } else if (keyCode == 13) {
+       //如果输入的是回车
+    
+       //下拉框有高亮内容
+      // alert(highlightindex);
+       if (highlightindex != -1) {
+        //取出高亮节点的文本内容
+        var comText = $SELECT.hide().children("div").eq(highlightindex).text();
+        highlightindex = -1;
+        //文本框中的内容变成高亮节点的内容
+         
+        textObj.val(comText);
+        valueObj.attr('value',$(event.target).attr('value'));
+       } else {
+        //下拉框没有高亮内容
+        //alert("文本框中的[" + textObj.val() + "]被提交了");
+       }
+      }
+      else{
+       //1.首先获取文本框中的内容
+       var wordText = textObj.val();
+       var autoNode =  $SELECT;
+       //alert(wordText);
+       if (wordText != "") {
+        autoNode.empty(); 
+        wordNodes.each(function() {
+            var regExp=new RegExp("^"+wordText,"");
+          
+          var wordNode = $(this);
+          if( regExp.test( wordNode.attr('name')) ){
+           $OPTION = $('<div>' + wordNode.attr('name') + '</div>').attr('name', 'option').attr('value', wordNode.attr('value')).css('width', $SELECT.width()).css('z-index', $SELECT.css('z-index') + 1);
+          $SELECT.append($OPTION);
+          }
+           
+         
+        });
+        
+       } else {
+        //autoNode.hide();
+          autoNode.empty(); 
+          wordNodes.each(function() {
+     
+          var wordNode = $(this);
+          //alert(wordNode.attr('name') );
+         $OPTION = $('<div>' + wordNode.attr('name') + '</div>').attr('name', 'option').attr('value', wordNode.attr('value')).css('width', $SELECT.width()).css('z-index', $SELECT.css('z-index') + 1);
+         $SELECT.append($OPTION);
+        });
+        
+
+        highlightindex = -1;
+       }
+      }
+     //-- 
+     }
+    });
+     
+    
+            });
+        </script>
+    </head>
+    <body>
+   
+  <br>
+        <input type="text" id="selectName" name="" value=""/>
+  <input type="hidden" id="selectValue" name=""  value=""/>
+  
+  <br>
+        <button type="button" onclick="alert(selectValue.value)">提交</button>
+    </body>
+</html>
+

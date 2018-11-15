@@ -1,0 +1,56 @@
+
+1。---------------用css样式控制
+用div包住跨行的内容。
+再设置width：100%;
+
+
+
+2.------------------------方法2
+// tb:要合并单元格的表格；stacol：开始合并列；endcol:结束合并列；bool:合并方式（true代表stacol与endcol之间合并；   false代表两边和并）;num标记列（防止某些信息因为内容相同而合并。eg，姓名相同而编号不同的两个人） 
+function   uniteTable(tb,stacol,endcol,bool,num) 
+{var end; 
+ var   i=0;   
+ var   j=0;   
+ var   rowCount=tb.rows.length;         //  行数   var   colCount=tb.rows[0].cells.length; // 列数   var   obj1=null;   
+ var   obj2=null;   
+ var  n=5; 
+ var count=new Array(); 
+ for   (i=0;i<rowCount;i++){   
+    for   (j=0;j<colCount;j++){   
+        tb.rows[i].cells[j].id="tb__" + i+"_"+j;       
+                              }   
+                            }   
+      //合并标记列，防止某些信息因为内容相同而合并（不需要时，可以不用传值）            if(typeof(num)!='undefined'){ 
+                  obj1=document.getElementById("tb__0_"+(num-1).toString());   
+          for(var t=1;t<rowCount;t++){ 
+obj2=document.getElementById("tb__"+t.toString()+"_"+(num-1).toString());                                      
+      if   (obj1.innerHTML==obj2.innerHTML){   
+        obj1.rowSpan++;   
+        obj2.parentNode.removeChild(obj2);   
+        } else{                                        
+      count[t]=n;//当第一个人的名称合并结束时，给count[t]赋值做标记 obj1=document.getElementById("tb__"+t.toString()+"_"+(num-1).toString());   }          
+                         }         
+                    
+                                   } 
+           //如果endcol未定义，代码将最终一列定义为endcol              //  if(typeof(endcol)=='undefined'){end=colCount;}else{end=endcol}             for   (i=0;i<colCount;i++){  
+          //bool:合并方式，true代表两边合并；false代表中间合并                if(bool){if (i+1<stacol||i+1>endcol){ continue;}} 
+               else{ if (i+1>stacol&&i+1<endcol){ continue;}  } 
+        obj1=document.getElementById("tb__0_"+i.toString());   
+             for(j=1;j<rowCount;j++){   
+  obj2=document.getElementById("tb__"+j.toString()+"_"+i.toString());    
+             if(typeof(count[j])!='undefined'){ 
+                       if(count[j]!=n){ 
+             if(obj1.innerHtml==obj2.innerHtml){                           obj1.rowSpan++;   
+                               obj2.parentNode.removeChild(obj2);  } 
+     else{  obj1=document.getElementById("tb__"+j.toString()+"_"+i.toString()); }       
+} else{  obj1=document.getElementById("tb__"+j.toString()+"_"+i.toString()); }   
+}    
+  else{      if(obj1.innerHTML==obj2.innerHTML){   
+             obj1.rowSpan++;   
+             obj2.parentNode.removeChild(obj2);   
+                     } 
+  else{  obj1=document.getElementById("tb__"+j.toString()+"_"+i.toString()); }  
+                              }  
+                                                        }   
+                                                   }     
+                            } 

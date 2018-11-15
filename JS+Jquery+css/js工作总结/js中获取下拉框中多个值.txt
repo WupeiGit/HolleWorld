@@ -1,0 +1,12 @@
+js怎么能取得多选下拉框选中的多个值？ 
+检举|2011-01-25 09:10 cool_rabbit | 分类：JavaScript | 浏览5546次 
+<select name="i_ts_desc" id="i_ts_desc" multiple="true">  <option value="1">A</option>    <option value="2">B</option>  <option value="3">C</option>   <option value="4">D</option></select>选中前两项，如何用js将选中的选项存成数组，传值到action中，希望哪位大侠将实现代码告知。我是这样在js中取得，然后ajax局部刷新把值传到action中，我选三个，但是只能取到一个值。注意：1,2,3和A，B，C的值都要取得。          var desc_id=[];   var desc=[];   desc_id = document.all("i_ts_desc").value;   desc = document.all("i_ts_desc").options[document.all("i_ts_desc").selectedIndex].text; 
+
+
+var desc_id=[];var obj = document.getElementById("i_ts_desc");for(var i=0;i<obj.options.length;i++){    if(obj.options[i].selected){        desc_id.push(obj.options[i].value);// 收集选中项    }}
+
+
+例如您想实现一个AJAX效果：$.ajax({    type:"POST", //数据传送方法    url:"test/", //ajax提交地址    data:$("form").serialize(), //直接将表单值转换成字符串    success: function () {} //成功后处理函数});是不是很简洁，而且使用jQuery获得表单的值也是非常简单的，你可以下载jQuery API学习一下，他们官网看参考资料。 jQuery同时还有个form插件，可以直接帮你以ajax方式提交数据库的。参考资料：http://jquery.com/
+
+评论|赞同0  检举|2011-01-25 09:28jerrylouis123|六级 
+<html><head>    <script type="text/javascript">        function check() {            var arr = new Array();            var op = document.getElementsByTagName("option");            for (var i = 0; i < op.length; i++) {                if (op[i].selected) {                    arr.push(op[i].value);                }            }            alert(arr);        }    </script></head><body>    <select name="i_ts_desc" id="i_ts_desc" multiple="true">        <option value="1">A</option>        <option value="2">B</option>        <option value="3">C</option>        <option value="4">D</option>    </select>    <input type="button" onclick="check()" value="click" /></body></html>

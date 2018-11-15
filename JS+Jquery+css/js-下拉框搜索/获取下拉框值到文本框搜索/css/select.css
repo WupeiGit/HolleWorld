@@ -1,0 +1,28 @@
+
+/* CSS Document */
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,li,form,img,dl,dt,dd,table,th,td,blockquote,fieldset,div,strong,label,em{margin:0;padding:0;border:0;}
+ul,ol,li{list-style:none;}
+input,button{margin:0;font-size:12px;vertical-align:middle;}
+body{font-size:12px;font-family:Arial, Helvetica, sans-serif;  text-align:center; margin:0 auto; }
+table{border-collapse:collapse;border-spacing:0;}
+
+.clearfloat{height:0;font-size:1px;clear:both;line-height:0;}
+
+#container{ width:100%;  text-align:left; margin:0 auto; }
+a{color:#333;text-decoration:none;}
+a:hover{color:#ef9b11; text-decoration:underline;}
+
+
+.searchBar{ padding-left:60px; padding-top:7px; width:590px; margin:40px auto;  height:33px;}
+.searchBar span{ float:right; margin-top:6px;}
+.searchBar span a{ color:#666; margin-right:8px;}
+.searchBar span a:hover{ color:#ef9b11;}
+.select {float: left; margin-top:1px; display:inline; margin-top: 5px;}
+.searchBar .text {float: left; }
+.searchBar .text input{width:214px; padding-top:3px; height:17px; border:1px solid #b7d1eb;}
+div.selectbox-wrapper {border:#D6D6D6 1px solid;  border-top: none; margin-top: -1px; *margin-top: -2px; width:72px; position: absolute; background:#fff;  text-align: left;}
+div.selectbox-wrapper ul li.selected {background: #e0ecf7;}
+div.selectbox-wrapper ul li.current {color: #fff; background: #36c;}
+div.selectbox-wrapper ul li {padding: 3px; width: 66px; cursor: pointer; line-height: 20px; }
+.selectbox { border:1px solid #D6D6D6;  display: block; padding-left:4px; height: 26px; line-height: 26px;  width: 69px; border-right: none; background: url(../images/br_down.png) no-repeat right center #fff; cursor: pointer; padding-top:4px;  }
+.btn{ float:left; display:inline; margin-left:8px; margin-top:2px;}

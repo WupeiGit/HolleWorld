@@ -1,0 +1,34 @@
+//选择【预算说明】时-显示详情
+	getDetialValue : function(obj){
+		var descId						= $(obj)[$(obj).selectedIndex].value;
+		var yearElmentName				= $(obj).parentNode.parentNode.childNodes[0].getElementsByTagName('select')[0];		//获取年下拉节点
+		var monthElmentName				= $(obj).parentNode.parentNode.childNodes[1].getElementsByTagName('select')[0];		//获取月下拉节点
+		var itemCodeElmentName			= $(obj).parentNode.parentNode.childNodes[3].getElementsByTagName('select')[0];		//获取科目下拉节点
+		var budgetPrice					= $(obj).parentNode.parentNode.childNodes[5];
+		var budgetPrice_itemBalance 	= $(obj).parentNode.parentNode.childNodes[6];
+		var itemBalance					= $(obj).parentNode.parentNode.childNodes[7];
+		
+		//获取对应节点的值
+		var transactDeptId				= $('sltTransactDeptId').value;
+		var yearValue					= yearElmentName[yearElmentName.selectedIndex].value;		
+		var monthValue					= monthElmentName[monthElmentName.selectedIndex].value;
+		var itemCode					= itemCodeElmentName[itemCodeElmentName.selectedIndex].value;
+
+		if (descId == '') {
+			$(obj).parentNode.parentNode.childNodes[5].innerHTML = '';
+			$(obj).parentNode.parentNode.childNodes[6].innerHTML = '';
+			$(obj).parentNode.parentNode.childNodes[7].innerHTML = '';
+		}else{
+			var url							= '?action=getDetailInfo&itemCode='+itemCode+'&monthValue='+monthValue+'&yearValue='+yearValue+'&descId='+descId+'&deptId='+transactDeptId;
+			new Ajax.Request(url,{
+				onComplete: function(t){
+					var context = t.responseText;
+					//alert(context);
+					budgetPrice.innerHTML				=	context.split(',')[0];
+					budgetPrice_itemBalance.innerHTML	=	context.split(',')[1];
+					itemBalance.innerHTML				=	context.split(',')[2];
+				}
+			});	
+		}
+	},
+	

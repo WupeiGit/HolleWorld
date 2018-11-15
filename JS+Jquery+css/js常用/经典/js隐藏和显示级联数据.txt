@@ -1,0 +1,282 @@
+asp页面
+<table border="0" cellpadding="0" cellspacing="1" class="tabStyle6" style="width:100%">
+	<tr>
+		<th>
+        	<% If cmdAduitLevel = 1 Then %>经理-审核用品管理<% End If %>
+            <% If cmdAduitLevel = 2 Then %>副总-审核用品管理<% End If %>
+            <% If cmdAduitLevel = 3 Then %>企管-审核用品管理<% End If %>
+        </th>
+	</tr>
+    <tr>
+        <td style="padding:10px">
+			<form name="frmSearch" id="frmSearch" action="applyCommodityAduit.asp?cmdAduitLevel=<%=cmdAduitLevel%>" method="post" class="paddingTB5pxLR10px" >
+				搜索选项: &nbsp;	<%=GetSlctCommodityField("schSlctObjField", schField, "", "")%>&nbsp; <input name="schObjText" id="schObjText" type="text" size="20" maxlength="20" value="<%=schSlcText%>"/>&nbsp;
+				<!--状态：&nbsp;	<%'=GetSelectActualStatus("schActualStatus", schActualStatus, "", "")%>&nbsp;-->
+				申请日期：&nbsp;	<input type="text" name="schApplyDate" id="schApplyDate" onclick="return showCalendarByEl(this);" size="12" maxlength="12" readonly="readonly" class="inputTextDateBg" value="<%=schApplyDate%>" /><label>&nbsp;</label>&nbsp;
+				部门：&nbsp; <%=GetSlctSearchDept("schApplyDeptId","schApplyDeptId",schApplyDeptId)%>
+				<input type="submit" name="btnSbmt" id="btnSbmt" class="btn_bg_style04" value="开始查询" />
+				<input type="button" name="schAll" id="schAll" class="btn_bg_style02" onClick="window.location='applyCommodityAduit.asp?cmdAduitLevel=<%=cmdAduitLevel%>'" value="查询全部"/>
+			</form>
+			
+			<form name="frmApplyList" id="frmApplyList" method="post">
+			<table width="100%" border="0" cellpadding="0" cellspacing="1" class="tabStyle16">
+				<tr> 	
+					<th width="2%" style="text-align:center;"><img src="/images/pics/pic_04.gif" border="0" onClick="BtnEvent.collapseAll(this);" title="展开所有" class="cur_hand" /></th>
+                    <th width="2%" style="text-align:center;"><input type="checkbox" id="checkAll" name="checkAll" onclick="selectAllChks();"/></th>
+					<th width="12%">申请编码</th>
+					<th width="32%">申请标题</th>
+					<th width="7%">申请部门</th>
+					<th width="5%">申请人</th>
+					<th width="8%">申请日期</th>
+					<th width="8%">经理审核</th>
+					<th width="8%">副总审核</th>
+                    <th width="8%">企管审核</th>
+					<th>操作</th>
+				</tr>
+				<%
+				If Not GetRs(rs, strSql) Then
+					Call NoDataTr()
+				Else
+					Call SetPageInfo(rs, iPage, iPageSize, pCount, itemCount)
+					For row =1 To iPageSize
+				%>
+				
+				<tr onclick="BtnEvent.selectedLine(this);" class="cur_hand" examFlag="examTitle">
+					<td style="text-align:center;">
+					<% If GetRs(rsDetail,strSqlDetail & " and applyCode = " & rs("applyCode")) Then %>
+						<div id="closeDetailList<%=row%>" style="display:block"><img src="/images/tree/02/plusbox.gif" border="0" align="absmiddle" hspace="3" onclick="BtnEvent.openDetails(<%=row%>);"  /></div>
+						<div id="openDetailList<%=row%>" style="display:none"><img src="/images/tree/02/minusbox.gif" border="0" align="absmiddle" hspace="3" onclick="BtnEvent.closeDetails(<%=row%>);"  /></div>
+					<% Else %>
+						<div class="font_gray">无</div>	
+					<% End If %>
+                    </td>
+                    <td>
+                  	  <input type="checkbox" name="checkBox" id="checkBox" value="<%=rs("applyCode")%>" onclick="RowEvent.selectThis(this.parentNode,this,'listSelectedS3');"/>
+					</td>
+					<td><%=rs("applyCode")%></td>
+					<td <%If (userBinessShowRole = "true") Then%> title="点击查看详情,并操作！"<%End If%>>
+                    	<%If (userBinessShowRole = "true") Then%>
+                    		<a href="#" onclick="toSureCommodityInfoByApplyCode(<%=cmdAduitLevel%>,'<%=rs("applyCode")%>');"><%=rs("applyTitle")%></a>
+                        <%Else %>
+                        	<%=rs("applyTitle")%>
+                        <%End If%>
+                    </td>
+					<td><%=rs("applyDeptName")%></td>
+					<td><%=rs("applyName")%></td>
+					<td><%=left(rs("applyDate"),10)%></td>
+					<td><%=ShowAduitStatus(Trim(rs("managerStatus")))%>
+                    	<%If Trim(rs("managerStatus")) = 1 Then %>
+                       	<span class="font_gray">(<%=rs("deptManager")%>)</span>
+                        <%End If%></td>
+					<td><%=ShowAduitStatus(Trim(rs("directorStatus")))%>
+                    	<%If Trim(rs("directorStatus")) = 1 Then %>
+                    	<span class="font_gray">(<%=rs("directorManager")%>)</span>
+                        <%End If%></td>
+                    <td><%=ShowBusinessStatus(Trim(rs("businessStatus")))%>
+                    	<%If Trim(rs("businessStatus")) = 2 Then %>
+                    	<span class="font_gray">(<%=rs("businessManager")%>)</span>
+                        <%End If%></td>
+					<td>
+					<%If userRight_self Then %>
+                        <!--经理审核-->
+                    	<%If (cmdAduitLevel = 1 and rs("applyStatus") = 1 and rs("managerStatus") = 0) Then%>
+						<input type="button" name="btnOk1<%=row%>" id="btnOk1<%=row%>" value="通过" class="btn_bg_style05_50" onclick="applyCommodity.toManagerAduit(1,'<%=rs("applyCode")%>',<%=row%>);" />
+						<input type="button" name="btnNo1<%=row%>" id="btnNo1<%=row%>" value="不通过" class="btn_bg_style02_50" onclick="applyCommodity.toManagerAduit(2,'<%=rs("applyCode")%>',<%=row%>);" />
+                        <!--副总审核-->
+                        <%ElseIf (cmdAduitLevel = 2 and rs("managerStatus") = 1) and (Session("deptCode") = "U01021") Then%>
+						<input type="button" name="btn3<%=row%>" id="btn3<%=row%>" value="通过" class="btn_bg_style01_50" onclick="applyCommodity.toDirectorAduit(1,'<%=rs("applyCode")%>',<%=row%>);" />
+						<input type="button" name="btnNo3<%=row%>" id="btnNo3<%=row%>" value="不通过" class="btn_bg_style05_50 font_red" onclick="applyCommodity.toDirectorAduit(2,'<%=rs("applyCode")%>',<%=row%>);" />
+						<%End If%>
+ 
+                      	<!--企管审核-->
+                        <!--<%'If (cmdAduitLevel = 3 and Session("deptId") = 11) Then%>
+							<%'If (rs("managerStatus") = 1 and rs("businessStatus") = 0) Then%>
+                            <input type="button" name="btnDcg2<%'=row%>" id="btnDcg2<%'=row%>" value="代采购" class="btn_bg_style04_50" onclick="applyCommodity.toBusinessAduit(1,'<%'=rs("applyCode")%>',<%'=row%>);" />
+                            <input type="button" name="btnNo2<%'=row%>" id="btnNo2<%'=row%>" value="不通过" class="btn_bg_style01_50" onclick="applyCommodity.toBusinessAduit(3,'<%'=rs("applyCode")%>',<%'=row%>);" />
+                            <%'ElseIf rs("businessStatus") = 1 Then%>
+                            <input type="button" name="btnYkf2<%'=row%>" id="btnYkf2<%'=row%>" value="已核发" class="btn_bg_style05_50" onclick="applyCommodity.toBusinessAduit(2,'<%'=rs("applyCode")%>',<%'=row%>);" />
+                            <%'End If%>
+						<%'End If%>-->
+                        
+                     <%End If%>
+				
+					</td>
+				</tr>
+				
+				<tr id="detailInfo<%=row%>" style="display:none">
+					<td colspan="8">
+					<table border="0" cellpadding="0" cellspacing="0" class="tabStyle16" style="width:100%">
+						<tr class="font_blueDeep">
+							<td width="2%">&nbsp;</td>
+							<td width="5%">序号</td>
+							<td width="20%">用品类型</td>
+							<td width="20%">用品名称</td>
+							<td width="25%" >用品规格</td>
+							<td width="6%">申请数量</td>
+							<td width="6%">部批数量</td>
+                            <td width="6%">单价</td>
+                            <td width="6%">总金额</td>
+						</tr>
+						<%
+						If GetRs(rsDetail,strSqlDetail & " and applyCode = " & rs("applyCode") & " order by dag.applyCode") Then 
+							For rowDetail = 1 To rsDetail.recordCount 
+							Dim sumTotalAmount : sumTotalAmount = sumTotalAmount+rsDetail("totalAmount")
+						%>
+						<tr bgcolor="#F8F8F8" onMouseOver="this.className='userInfoListOver'" onMouseOut="this.className='font_grayDeep';this.bgColor='#F8F8F8'" class="font_grayDeep">
+							<td>&nbsp;</td>
+							<td><%=rowDetail%></td>
+							<td><%=rsDetail("commodityType")%><%=GetShowCateName(rsDetail("commodityType"))%></td>
+							<td><%=rsDetail("commodityName")%></td>
+							<td><%=rsDetail("commodityNorms")%></td>
+							<td><%=rsDetail("applyNumber")%></td>
+							<td><%=rsDetail("deptBatchNum")%></td>
+                            <td><%=rsDetail("price")%></td>
+                            <td><%=rsDetail("totalAmount")%></td>
+						</tr>
+						<%
+								rsDetail.MoveNext
+								If (rsDetail.Bof Or rsDetail.Eof) Then Exit For
+							Next
+						End If
+						Call DestoryRs(rsDetail)
+						%>	
+                        <tr>
+                        	<td colspan="8">合计总金额：</td>
+                            <td><%=sumTotalAmount%></td>
+                         </tr>				
+					</table>
+					</td>
+					<td colspan="5">&nbsp;</td>
+				</tr>
+				
+				<%
+						rs.MoveNext
+						If (rs.Bof or rs.Eof) Then Exit For
+					Next
+				End If
+				Call DestoryRs(rs)
+				%>
+				<tr class="pageBar01">
+					<td colspan="20" style="text-align:right"><%=CreatePageInfo(iPage, iPageSize, pCount, itemCount, otherKeys, pageStyle)%></td>
+				</tr>
+			</table>
+			</form>
+		</td>
+	</tr>
+</table>
+</body>
+------------------------------------------------------------------------------js
+//隐藏显示
+var BtnEvent = {
+	//显示详情
+	openDetails : function(row){
+		$('detailInfo'+ row).style.display = "block";
+		$('openDetailList'+ row).style.display = "block";
+		$('closeDetailList'+ row).style.display = "none";
+	},
+	
+	//关闭详情
+	closeDetails : function(row){
+		$('detailInfo'+ row).style.display = "none";
+		$('openDetailList'+ row).style.display = "none";
+		$('closeDetailList'+ row).style.display = "block";		
+	},
+	
+	//选中行时显示详情
+	toShowDetailStyle : function(row){
+		if($('detailInfo'+ row).style.display=="none"){
+			BtnEvent.openDetails(row);
+		}else{
+			BtnEvent.closeDetails(row);
+		}
+	},	
+	
+	// 选中行
+	selectedLine : function(lineNode){
+		if(saveNode!=null) saveNode.className = '';
+		saveNode = lineNode;
+		lineNode.className = 'listSelectedS6';
+	},
+	
+	collapseAll	: function(el){
+	var trAll 		= $A(document.getElementsByTagName('TR'));
+	var examTitle   = trAll.findAll(function(s){ return (s.examFlag == 'examTitle') });
+	
+	if(el.title == '展开'){
+		for(var i = 1; i <= examTitle.length; i++){
+			$('detailInfo'+ i).style.display = 'block';
+			$('openDetailList'+ i).style.display = 'block';
+			$('closeDetailList'+ i).style.display = 'none';
+		}
+		el.title = '折叠';
+		el.src = '/images/pics/pic_05.gif';
+	}else{
+		for(var i = 1; i <= examTitle.length; i++){
+			$('detailInfo'+ i).style.display = 'none';
+			$('closeDetailList'+ i).style.display = 'block';
+			$('openDetailList'+ i).style.display = 'none';
+		}
+		el.title = '展开';
+		el.src = '/images/pics/pic_04.gif';
+	}
+}
+		
+}
+
+
+//单选选中整行
+function selectThisLine(obj){
+	if(this.pObj != undefined) this.pObj.className = this.pObjStyle;
+	this.pObj = obj;
+	this.pObjStyle = obj.className;
+	this.applyCode = obj.firstChild.childNodes[0].value;
+	obj.firstChild.childNodes[0].checked = true;
+	obj.className = "listSelectedS8";
+}
+
+//选择行样式
+function selectThisLineCheck(tdNode, obj){
+	var trNode = tdNode.parentNode;
+	if(obj.checked) {trNode.className = 'listSelectedS8';}
+	else {trNode.className = '';}
+}
+
+//全选复选框
+function selectAllChks(){
+	var objChks=document.getElementsByName("checkBox");
+	
+	if($("checkAll").getAttribute("checked")==true){
+		for(var i=0;i<objChks.length;i++){
+			 objChks[i].setAttribute("checked","checked");
+		}
+	}else{
+		for(var i=0;i<objChks.length;i++){
+			 objChks[i].setAttribute("checked","");
+		}
+	}
+}
+
+//----------------隐藏和显示------------------------
+function doShow(obj, row){
+	if(obj.style.display == 'block')
+		doClose($('close'+ row), row);
+	else
+		doOpen($('open'+ row), row);
+}
+
+function doClose(obj, row){
+	var openEl  = 'open'+ row;
+	var cListEl = 'cList'+ row;
+	menuDisplay($(cListEl).style.display, cListEl);
+	obj.style.display = 'none';
+	$(openEl).style.display = 'block';
+}
+
+function doOpen(obj, row){
+	var closeEl = 'close'+ row;
+	var cListEl = 'cList'+ row;
+	menuDisplay($(cListEl).style.display, cListEl);
+	obj.style.display = 'none';
+	$(closeEl).style.display = 'block';
+}
+

@@ -1,0 +1,68 @@
+ <tr onclick="RowEvent.selectedLine(this);" class="cur_hand" title="客户合同管理">
+                 <td><%=CreateCheckBox("selectOne","selectOne",rs("agentId"),"","","")%></td>
+                 <td><%=rs("agreementCode")%></td>
+ </tr>
+
+
+Function CreateCheckBox(ByVal chkId,ByVal chkName,ByVal chkValue, ByVal isChecked,ByVal eventType,ByVal eventHandle)
+   Dim objTag,objChk
+   Set objTag = Server.CreateObject("MSXML2.DOMDocument")
+   Set objChk = objTag.CreateElement("input")
+   
+	objChk.Attributes.SetNamedItem(objTag.CreateNode(2,"type","")).Text = "checkbox"
+	objChk.Attributes.SetNamedItem(objTag.CreateNode(2,"id","")).Text = chkId
+	objChk.Attributes.SetNamedItem(objTag.CreateNode(2,"name","")).Text = chkName
+   
+   If isChecked="1" Then objChk.Attributes.SetNamedItem(objTag.CreateNode(2,"checked","")).Text = "checked"
+   objChk.Attributes.SetNamedItem(objTag.CreateNode(2,"value","")).Text = chkValue
+   '处理标签事件
+   Select Case eventType
+			Case "onclick"
+				objChk.Attributes.SetNamedItem(objTag.CreqateNode(2,"onclick","")).Text = eventHandle
+			Case Else
+   End Select
+   objTag.AppendChild(objChk)	   
+   CreateCheckBox = objTag.DocumentElement.XML
+End function  
+
+
+
+
+// 获取选中项值
+function getSelectedItemVal() {
+	var arrRdoTdInfo 	= document.getElementsByName("selectone");
+	var strSelectedVal 	= "";
+	for(var i = 0; i < arrRdoTdInfo.length; i++) {
+		if(arrRdoTdInfo[i].checked == true)
+			strSelectedVal = arrRdoTdInfo[i].value;
+	}
+	if(strSelectedVal.blank()){
+		alert("[提示] 请选中一条信息进行操作！");
+	}else{
+		return strSelectedVal;
+	}
+}
+
+
+	//删除
+	toAgentAgreementDelete :　function() {
+		var iVIds = "";
+		var arrChkSltVote;
+		var count = getSelectedCount();
+	
+		if(getSelectedItemVal() != undefined) {
+			if(window.confirm("您将要删除"+count+"条记录，是否要继续？")) {
+				arrChkSltVote = document.getElementsByName("selectone");
+				for(var i = 0; i < arrChkSltVote.length; i++) {
+					if(arrChkSltVote[i].checked == true) {
+						iVIds += arrChkSltVote[i].value + ",";
+					}
+				}                                                             
+				iVIds = iVIds.substring(0,iVIds.length - 1);
+				toUrl('agentAgreement.asp?action=agentAgreementDelete&agentId='+iVIds);
+			} else {
+				return false;
+			} 
+		}
+	}
+	

@@ -1,0 +1,83 @@
+-----------------------Dao---------------------------------
+Function SelectProjModuleFields(ByVal pmId)
+	Dim sql, rs, trModuleFields
+	
+		sql = " select pmId, content, properties, scoreOne, describeOne, scoreTwo, describeTwo, scoreThree, describeThree, scoreFour, describeFour, scoreFive, describeFive"&_ 
+			  " from projectModule where pmId = "& pmId
+			  
+		If GetRs(rs, sql) Then
+			Dim p_content		 : p_content			= Trim(rs("content"))
+			Dim p_properties 	 : p_properties 		= Trim(rs("properties"))
+			Dim p_scoreOne		 : p_scoreOne 			= Trim(rs("scoreOne"))
+			Dim p_describeOne	 : p_describeOne		= Trim(rs("describeOne"))
+			Dim p_scoreTwo	 	 : p_scoreTwo			= Trim(rs("scoreTwo"))
+			Dim p_describeTwo	 : p_describeTwo		= Trim(rs("describeTwo"))
+			Dim p_scoreThree	 : p_scoreThree			= Trim(rs("scoreThree"))
+			Dim p_describeThree	 : p_describeThree 		= Trim(rs("describeThree"))
+			Dim p_scoreFour	 	 : p_scoreFour	 		= rs("scoreFour")
+			Dim p_describeFour 	 : p_describeFour		= rs("describeFour")
+			Dim p_scoreFive		 : p_scoreFive			= rs("scoreFive")
+			Dim p_describeFive	 : p_describeFive		= rs("describeFive")
+		End If		
+		Call DestoryRs(rs)
+		
+		trModuleFields =" <table width=""100%"" border=""0"" align=""center"" cellpadding=""6"" cellspacing=""1"" class=""tabStyleAgentCommon"">"&_
+								"  	 <tr><td><strong>说明</strong></td><td>"& p_content &"</td></tr>"&_
+								"	 <tr><td><strong>项目性质</strong></td><td>"& p_properties &"</td></tr>"&_
+								"	 <tr><td><strong>说明</strong></td><td>"& p_content &"</td></tr>"&_
+								"	 <tr><td><strong>比重</strong></td><td><input type=""text"" id=""proportion"" name=""proportion""></td></tr>"&_
+								"	 <tr><td><strong>范围描述</strong></td><td><input type=""text"" id=""scoreDescribe"" name=""scoreDescribe""></td></tr>"&_
+								"	 <tr><td><strong>目标值</strong></td><td><input type=""text"" id=""targetValue"" name=""targetValue""></td></tr>"&_
+								"	 <tr><td><strong>分值1</strong></td><td>"& p_scoreOne &"</td></tr>"&_
+								"	 <tr><td><strong>描述1</strong></td><td>"& p_describeOne &"</td></tr>"&_
+								"	 <tr><td><strong>分值2</strong></td><td>"& p_scoreTwo &"</td></tr>"&_
+								"	 <tr><td><strong>描述2</strong></td><td>"& p_describeTwo &"</td></tr>"&_
+								"	 <tr><td><strong>分值3</strong></td><td>"& p_scoreThree &"</td></tr>"&_
+								"	 <tr><td><strong>描述3</strong></td><td>"& p_describeThree &"</td></tr>"&_
+								"	 <tr><td><strong>分值4</strong></td><td>"& p_scoreFour &"</td></tr>"&_
+								"	 <tr><td><strong>描述4</strong></td><td>"& p_describeFour &"</td></tr>"&_
+								"	 <tr><td><strong>分值5</strong></td><td>"& p_scoreFive &"</td></tr>"&_
+								"	 <tr><td><strong>描述5</strong></td><td>"& p_describeFive &"</td></tr>"&_
+								" 	 <tr><td><strong>实际分值</strong></td><td><input type=""text"" id=""actualScore"" name=""actualScore""></td></tr>"&_
+								"</table>"
+	 SelectProjModuleFields = trModuleFields
+End Function
+
+
+
+%>
+
+
+-------------------------------------action--------------------
+	'选择“项目指标”时--ajax查询基础表的其他相关信息
+	Case "selectProjModuleFields"
+'		Response.Write(CreateProjModuleFields("projModuleFields","",""& Request.QueryString("pmIds") &"","onclick","appraisal"))
+'		Response.End()
+		'break(SelectProjModuleFields(Request.QueryString("pmId")))
+		break(SelectProjModuleFields(GetSafeStr(Request("pmId"))))
+
+
+
+--------------------------------------------asp-----------------------
+		<tr>
+						<td width="10%"><strong>项目类型</strong></td>
+						<td class="cList_li_200px_margin5px"><%=CreateSltProjectType("projectType", "", "onclick", "appraisal.toGetProjectTarget()")%></td>
+					</tr>
+					<tr id="trProjectTarget" style="display:none;">
+						<td><strong>项目指标</strong></td>
+						<td id="tdPrjTarget" class="cList_li_200px_margin5px"></td>
+					</tr>
+
+----------------------------------js------------------------------
+
+	//选择“项目指标”时触发事件查询其他信息
+	toGetProjModuleFields : function(objPmId){
+		var url = 'projectExamList.asp?action=selectProjModuleFields&pmId='+ objPmId;
+		new Ajax.Request(url,{
+			onComplete : function(t){
+				$("showTr").style.display = "block";
+				$("tdProjModuleFields").innerHTML = t.responseText;
+			}
+		});
+	}
+

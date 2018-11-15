@@ -1,0 +1,97 @@
+<script type="text/javascript">
+<!--
+function submitReport(){
+	var html = $('exportReport').innerHTML;
+	var flag = true;
+	if(html == '') if(!window.confirm('注：没有查找到任何数据！\n\n是否继续？')) flag = false;
+	if(flag){
+		$('excelData').value = html;
+		$('exportReport').submit();
+	}
+}
+//-->
+</script>
+
+
+
+
+ <form name="exportReport" action="/admin/common/exportExcel.asp" method="post">
+        <table width="99%" border="0" cellpadding="3" cellspacing="1" class="tabStyle16">
+          <tr style="position:relative;top:expression(document.getElementById('divContent').scrollTop);">
+            <th width="7%">出团日期</th>
+            <th width="7%">签证类型</th>
+            <th width="25%">产品名称</th>
+            <th>团号</th>
+            <th width="7%">送签日期</th>
+            <th width="5%">组团人</th>
+            <th width="2%" title="预收">预</th>
+            <th width="2%" title="已收">已</th>
+            <th width="2%" title="到材料"><b class="font_gray">材</b></th>
+            <th width="2%" title="送签"><b class="font_blue">送</b></th>
+            <th width="2%" title="出签"><b class="font_green">出</b></th>
+            <th width="2%" title="拒签"><b class="font_red">拒</b></th>
+            <th width="2%" title="撤签"><b class="font_del">撤</b></th>
+            <th width="2%" title="自备签"><b class="font_orange">自</b></th>
+            <th width="2%" title="出签不走"><b class="font_brown">不</b></th>
+            <th width="5%">操作</th>
+          </tr>
+          <%
+			If Not GetRs(rsVisaList, strSql) Then
+				If Not isRight Then
+					Call NoDataTrPlus("<label class=font_gray>[<strong>提示</strong>] 您无权限访问该页，请与管理员联系！</label>")
+				Else
+					Call NoDataTr()
+				End If
+			Else
+				Call SetPageInfo(rsVisaList, iPage, iPageSize, pCount, itemCount)
+				For i = 1 To iPageSize
+					If Len(rsVisaList("teamNote")) > 0 Then
+						page_lineName = "[<b>产品名称</b>] "& rsVisaList("xlName") &"<br/>[<b>团队备注</b>] "& rsVisaList("teamNote")
+					Else
+						page_lineName = "[<b>产品名称</b>] "& rsVisaList("xlName")
+					End If
+			%>
+          <tr onClick="RowEvent.selectedLine(this);" onDblClick="visaTeamCustomerList('<%=rsVisaList("tdId")%>');" title="双击进入" class="cur_hand">
+            <td><%=rsVisaList("ctDate")%></td>
+            <td><%
+					If rsVisaList("QianZhengKind") = "无" Then
+						Out("<label class=font_gray>"& rsVisaList("QianZhengKind") &"</label>")
+					Else
+						Out(rsVisaList("QianZhengKind"))
+					End If							
+					%></td>
+            <td><%
+					If Len(rsVisaList("xlName")) > 10 Or Len(rsVisaList("teamNote")) > 0 Then
+						Out("<label onmouseover=""toolTip('"& page_lineName &"')"" onmouseout=""toolTip()"">")
+						Out(CutContents(rsVisaList("xlName"),25))
+					Else
+						Out("<label>"& rsVisaList("xlName"))
+					End If
+					Out("</label>")
+				%></td>
+            <td><%=rsVisaList("tuanNo")%></td>
+            <td><%=rsVisaList("JieShouRiQi")%></td>
+            <td><%=rsVisaList("ztRen")%></td>
+            <td><b><%=rsVisaList("planNum")%></b></td>
+            <td><b><%=rsVisaList("manNum")%></b></td>
+            <td><b class="font_gray"><%=rsVisaList("visaInfoCnt")%></b></td>
+            <td><b class="font_blue"><%=rsVisaList("sendVisa")%></b></td>
+            <td><b class="font_green"><%=rsVisaList("outVisa")%></b></td>
+            <td><b class="font_red"><%=rsVisaList("refuseVisa")%></b></td>
+            <td><b class="font_del"><%=rsVisaList("cancelVisa")%></b></td>
+            <td><b class="font_orange"><%=rsVisaList("selfVisa")%></b></td>
+            <td><b class="font_brown"><%=rsVisaList("outVisaNotGo")%></b></td>
+            <td><a href="#" onClick="setVisaRes('<%=rsVisaList("tdId")%>');">签证设置</a>
+				<%If session("deptId") =  2 Then%><a href="#" onClick="toSetupVisaInfor(<%=rsVisaList("tdId")%>);">签证材料设置</a><%End If%>
+			</td>
+          </tr>
+          <%
+					rsVisaList.MoveNext
+					If(rsVisaList.Bof Or rsVisaList.Eof) Then Exit For
+				Next
+			End If
+			Call DestoryRs(rsVisaList)
+			%>
+        </table>
+		<input type="hidden" name="excelData" />
+	  </form>

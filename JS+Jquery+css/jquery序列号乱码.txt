@@ -1,0 +1,13 @@
+一：在项目中发现用了jquery serialize这个方法后，中文已经转了编码格式的了，以为直接将tomcat的设置为utf-8就可以解决，发现并不是这样的，后来直接上网google一翻，得到以下答案：特记录如下（试过可行）
+
+1 原因：.serialize()自动调用了encodeURIComponent方法将数据编码了    
+2 解决方法：调用decodeURIComponent(XXX,true);将数据解码    
+3 例如：    
+4 var params = jQuery("#formId").serialize(); // http request parameters.    
+5 params = decodeURIComponent(params,true);  
+二：1.将jquery.js文件中的encodeURIComponent替换为encodeURI。即可解决中文乱码。（不知道在哪改，没试过）
+2.另一种方式将所有jsp、xml的字符集都设置为UTF-8 。（我的这两种文件本来都是UTF-8，估计有漏掉的，是否可行未知）
+JSP 
+<%@ page language="java" contentType="text/html; charset=UTF-8"%> 
+XML 
+<?xml version="1.0" encoding="UTF-8"?>
