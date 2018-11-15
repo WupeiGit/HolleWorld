@@ -1,0 +1,57 @@
+1.js----------------------------------------------------
+//显示费用金额浮层
+	toShowMoneyInfo	: function(year,month,deptCode,itemCode,bopId,auditRole){	
+		var showDiv = document.createElement('div');
+		var loadMoneyInfo = document.getElementById('loadMoneyInfo');
+		
+		if(loadMoneyInfo != null){
+			document.body.removeChild(loadMoneyInfo);
+		}
+		showDiv.id = 'loadMoneyInfo';
+		showDiv.style.width = 'auto';
+		showDiv.style.height = 'auto';
+		showDiv.style.overflowY = 'auto';
+		showDiv.style.position = 'absolute'; //绝对定位
+		var leftNum = Event.pointerX(event) + 10;
+		var topNum = Event.pointerY(event) - 10;
+		showDiv.style.left = '0'+ leftNum +'px'; //'40%';
+		showDiv.style.top = '0'+ topNum +'px';  // '25%';		
+		document.body.appendChild(showDiv);
+		
+		jQuery.ajax({
+			//url : "loadCostUsedMoneyInfo",
+			url : "loadCostUsedMoneyInfo",
+			data : {
+				year : year,
+				month : month,
+				deptCode : deptCode,
+				itemCode : itemCode,
+				bopId : bopId,
+				auditRole : auditRole
+			},
+			type : "POST",
+			success : function(data) {
+				if(isAjaxSuccess(data)){
+					showDiv.innerHTML = data;
+				}
+			},
+            error : function(data){
+                alert( '系统出错，请从新加载。');
+            }
+		});
+	},
+		//隐藏浮层
+	toHiddenMoneyInfo : function(){
+		var loadMoneyInfo = document.getElementById('loadMoneyInfo');
+		if(loadMoneyInfo != null){
+			document.body.removeChild(loadMoneyInfo);
+		}
+	},
+
+
+========================html=====================================
+
+<td id="projectName" class="hand font_blue" onclick="showPopWinNoBtn('loadBusinessCostHistoryList?bcdId=<s:property value="bcdId" />&auditRole=${auditRole}&type=bopId','【<s:property value="costDeptName" />】【<s:property value="projectName" />】已申请费用列表','75%',600);" onmouseover="bcd.toShowMoneyInfo(<s:property value="yearValue" />,<s:property value="monthValue" />,'<s:property value="costDeptCode" />','<s:property value="itemCode" />',<s:property value="bopId" />,'${auditRole}');" onmouseout="bcd.toHiddenMoneyInfo();"><s:property value="projectName" /></td>
+
+
+
